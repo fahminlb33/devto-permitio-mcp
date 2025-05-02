@@ -3,7 +3,9 @@ import { ulid } from "ulid";
 import { hash } from "bcryptjs";
 
 import { db, sessionsTable, usersTable } from "~/db";
-import { permit, type UserRole } from "~/utils";
+import { getConfig, permit, type UserRole } from "~/utils";
+
+const config = getConfig();
 
 export type User = {
   userId: string;
@@ -129,10 +131,10 @@ export async function create(data: {
     email: c.email,
     first_name: c.first_name,
     last_name: c.last_name,
-    attributes: {},
     role_assignments: [
       {
         role: c.role,
+        tenant: config.permit.tenant,
       },
     ],
   });

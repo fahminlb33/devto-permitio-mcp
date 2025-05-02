@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/libsql";
-import { getConfig } from "../utils";
+
+import { getConfig } from "~/utils";
 
 const config = getConfig();
 

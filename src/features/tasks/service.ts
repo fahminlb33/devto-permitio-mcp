@@ -90,22 +90,31 @@ export async function list(userId?: string) {
 export async function statisticsByUser() {
   const stats = await db
     .select({
+      taskId: tasksTable.id,
+      taskCount: count(tasksTable.id),
+      userId: usersTable.id,
       firstName: usersTable.first_name,
       lastName: usersTable.last_name,
-      taskCount: count(tasksTable.id),
     })
     .from(tasksTable)
     .innerJoin(usersTable, eq(usersTable.id, tasksTable.epic_id))
-    .groupBy(usersTable.id, usersTable.first_name, usersTable.last_name);
+    .groupBy(
+      tasksTable.id,
+      usersTable.id,
+      usersTable.first_name,
+      usersTable.last_name,
+    );
 
   if (stats.length === 0) {
-    return null;
+    return [];
   }
 
   return stats.map((x) => ({
+    taskId: x.taskId,
+    taskCount: x.taskCount,
+    userId: x.userId,
     firstName: x.firstName,
     lastName: x.lastName,
-    taskCount: x.taskCount,
   }));
 }
 

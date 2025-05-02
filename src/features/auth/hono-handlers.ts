@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 
 import { HttpStatus } from "~/utils";
-import type { CustomJwtVariables } from "../common";
+import type { CustomJwtVariables } from "~/features/common";
 
 import * as authService from "./service";
 

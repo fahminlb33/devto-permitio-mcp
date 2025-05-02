@@ -91,7 +91,7 @@ app.patch(
   },
 );
 
-app.get("/statistics/users", async (c) => {
+app.get("/statistics", async (c) => {
   const stats = await service.statisticsByUser();
   return c.json(stats);
 });

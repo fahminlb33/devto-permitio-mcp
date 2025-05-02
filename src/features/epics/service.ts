@@ -188,6 +188,6 @@ export async function remove(id: string) {
     return false;
   }
 
-  await permit.api.resourceInstances.delete("");
+  await permit.api.resourceInstances.delete(id);
   return true;
 }

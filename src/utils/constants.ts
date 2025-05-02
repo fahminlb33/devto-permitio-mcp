@@ -1,10 +1,18 @@
 export const MimeTypeJson = "application/json";
 
-export type UserRole = "admin" | "manager" | "developer";
+export type UserRole = "Admin" | "Manager" | "Developer";
 
 export type TaskStatus = "TODO" | "IN_PROGRESS" | "DONE";
 
-export type ResourceAction = "create" | "read" | "update" | "delete" | "reject";
+export type ResourceAction =
+  | "create"
+  | "read"
+  | "update"
+  | "delete"
+  | "assign"
+  | "unassigned"
+  | "log-work"
+  | "reject";
 
 export enum ResourceNames {
   Epic = "Epic",
@@ -39,17 +47,33 @@ export enum HttpStatus {
   InternalServerError = 500,
 }
 
-export function httpMethodToAction(method: string): ResourceAction {
+const taskResources = ["assign", "unassigned", "log-work"] as const;
+export function getResourceFromReq(
+  method: string,
+  path: string,
+): ResourceAction {
+  for (const res of taskResources) {
+    if (path.includes(res)) {
+      return res;
+    }
+  }
+
   switch (method.toUpperCase()) {
     case "POST":
       return "create";
-    case "GET":
-      return "read";
     case "PUT":
       return "update";
+    case "GET":
+      return "read";
     case "DELETE":
       return "delete";
     default:
       return "reject";
   }
+}
+
+export function getDeleteMessage(success: boolean, resource: string): string {
+  return success
+    ? `${resource} deleted successfully`
+    : `Failed to delete ${resource}, it is not exists or already deleted`;
 }

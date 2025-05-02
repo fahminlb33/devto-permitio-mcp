@@ -1,12 +1,14 @@
+import "dotenv/config";
 import { z } from "zod";
 
 const ConfigSchema = z.object({
   database: z.object({
-    url: z.string().url(),
+    url: z.string(),
   }),
   permit: z.object({
     token: z.string(),
     pdpUrl: z.string().url(),
+    tenant: z.string().default("default"),
   }),
   jwt: z.object({
     secret: z.string(),
@@ -21,11 +23,13 @@ export function getConfig(): z.infer<typeof ConfigSchema> {
       url: process.env.DB_URL,
     },
     permit: {
-      token: process.env.PERMITIO_TOKEN,
-      pdpUrl: process.env.PERMITIO_PDP_URL,
+      token: process.env.PERMIT_IO_TOKEN,
+      pdpUrl: process.env.PERMIT_IO_PDP_URL,
+      tenant: process.env.PERMIT_IO_TENANT,
     },
     jwt: {
       secret: process.env.JWT_SECRET,
+      algorithm: process.env.JWT_ALGORITHM,
     },
     webhookUrl: process.env.WEBHOOK_URL,
   });

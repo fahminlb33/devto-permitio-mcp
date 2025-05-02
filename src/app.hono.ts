@@ -1,8 +1,7 @@
-import "dotenv/config";
-
 import { jwt } from "hono/jwt";
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
+import { logger } from "hono/logger";
 import { except } from "hono/combine";
 
 import {
@@ -13,13 +12,22 @@ import {
   commentsHono,
   type CustomJwtVariables,
 } from "./features";
-import { permit, getConfig, httpMethodToAction, HttpStatus } from "./utils";
+import {
+  permit,
+  getConfig,
+  getResourceFromReq,
+  sentenceCase,
+  HttpStatus,
+} from "./utils";
 
 // get configuration
 const config = getConfig();
 
 // create server
 const server = new Hono<{ Variables: CustomJwtVariables }>();
+
+// request logging
+server.use(logger());
 
 // JWT middleware for authentication
 server.use(
@@ -40,10 +48,10 @@ server.use(
       return c.notFound();
     }
 
-    const resource = path[1];
-    const action = httpMethodToAction(c.req.method);
+    const resource = sentenceCase(path[2].slice(0, -1));
+    const action = getResourceFromReq(c.req.method, c.req.path);
 
-    const permitted = await permit.check(jwtPayload.id, action, resource);
+    const permitted = await permit.check(jwtPayload.sub, action, resource);
     if (!permitted) {
       return c.json({ error: "Permission denied" }, HttpStatus.Forbidden);
     }

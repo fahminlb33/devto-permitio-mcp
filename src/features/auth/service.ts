@@ -15,6 +15,7 @@ export async function loginWithJWT(email: string, password: string) {
     .select()
     .from(usersTable)
     .where(eq(usersTable.email, email));
+
   if (rows.length === 0) {
     return null;
   }
@@ -25,7 +26,7 @@ export async function loginWithJWT(email: string, password: string) {
     return null;
   }
 
-  const accessToken = sign(
+  const accessToken = await sign(
     {
       exp: Math.floor(Date.now() / 1000) + 60 * 60,
       sub: user.id,

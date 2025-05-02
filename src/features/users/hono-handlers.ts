@@ -74,13 +74,13 @@ app.post(
       firstName: z.string(),
       lastName: z.string(),
       password: z.string(),
-      role: z.enum(["admin", "manager", "developer"]),
+      role: z.enum(["Admin", "Manager", "Developer"]),
     }),
   ),
   async (c) => {
     const body = c.req.valid("json");
     const isEmailTaken = await service.isEmailTaken(body.email);
-    if (!isEmailTaken) {
+    if (isEmailTaken) {
       return c.json({ error: "Email is already used" }, HttpStatus.Conflict);
     }
 
