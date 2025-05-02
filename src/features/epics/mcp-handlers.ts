@@ -4,186 +4,119 @@ import {
   ResourceTemplate,
 } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { MessageConstants, MimeTypeJson } from "~/utils";
-import { mcpAuthorize, mcpParseResource } from "~/features/common";
+import { getDeleteMessage, MimeTypeJson } from "~/utils";
+import { authorizeTool, parseAndAuthorizeResource } from "~/features/common";
 
 import * as service from "./service";
+
+const ResourceName = "epics";
+
+enum Actions {
+  Create = "create",
+  Update = "update",
+  Delete = "delete",
+}
+
+enum Descriptions {
+  List = "List all epics in the system",
+  Detail = "Get a detailed epic information, contains the epic title, creator, and creation date.",
+  Statistics = "List all epics along with its task progression statistics.",
+  Create = "Create new epic.",
+  Rename = "Rename existing epic title.",
+  Delete = "Delete existing epic based on its ID.",
+}
 
 export default function mcpEpicHandlers(server: McpServer) {
   server.resource(
     "list-epics",
-    new ResourceTemplate("epics://{sessionCode}/list", { list: undefined }),
-    async (uri, body) => {
-      const parsed = await mcpParseResource(
-        body,
-        z.object({
-          sessionCode: z.string(),
-        }),
-      );
-
-      if (!parsed.success) {
+    new ResourceTemplate(`${ResourceName}://{sessionCode}/list`, {
+      list: undefined,
+    }),
+    {
+      name: "List epics",
+      description: Descriptions.List,
+    },
+    parseAndAuthorizeResource(
+      z.object({ sessionCode: z.string() }),
+      async (uri, data, user) => {
+        const epics = await service.list(user.id);
         return {
-          contents: parsed.errorMessages.map((msg) => ({
-            uri: uri.href,
-            text: msg,
+          contents: epics.map((epic) => ({
+            uri: `${ResourceName}://{sessionCOde}/${epic.epicId}`,
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(epic),
           })),
         };
-      }
-
-      const authorized = await mcpAuthorize({
-        type: "resource",
-        uri: uri,
-        sessionCode: parsed.data.sessionCode,
-      });
-
-      if (!authorized.success) {
-        return {
-          contents: [
-            {
-              uri: uri.href,
-              text: MessageConstants.Forbidden,
-            },
-          ],
-        };
-      }
-
-      const epics = await service.list(authorized.userId);
-      return {
-        contents: epics.map((epic) => ({
-          uri: `epics://{sessionCOde}/${epic.epicId}`,
-          mimeType: MimeTypeJson,
-          text: JSON.stringify(epic),
-        })),
-      };
-    },
+      },
+    ),
   );
 
   server.resource(
     "epic-detail",
-    new ResourceTemplate("epics://{sessionCode}/{epicId}", { list: undefined }),
-    async (uri, body) => {
-      const parsed = await mcpParseResource(
-        body,
-        z.object({
-          sessionCode: z.string(),
-          epicId: z.string().ulid(),
-        }),
-      );
-
-      if (!parsed.success) {
-        return {
-          contents: parsed.errorMessages.map((msg) => ({
-            uri: uri.href,
-            text: msg,
-          })),
-        };
-      }
-
-      const authorized = await mcpAuthorize({
-        type: "resource",
-        uri: uri,
-        sessionCode: parsed.data.sessionCode,
-      });
-
-      if (!authorized.success) {
+    new ResourceTemplate(`${ResourceName}://{sessionCode}/{epicId}`, {
+      list: undefined,
+    }),
+    {
+      name: "Get epic detail",
+      description: Descriptions.Detail,
+    },
+    parseAndAuthorizeResource(
+      z.object({
+        sessionCode: z.string(),
+        epicId: z.string().ulid(),
+      }),
+      async (uri, data, user) => {
+        const epic = await service.get(data.epicId);
         return {
           contents: [
             {
               uri: uri.href,
-              text: MessageConstants.Forbidden,
+              mimeType: MimeTypeJson,
+              text: JSON.stringify(epic),
             },
           ],
         };
-      }
-
-      const epic = await service.get(parsed.data.epicId);
-      return {
-        contents: [
-          {
-            uri: uri.href,
-            mimeType: MimeTypeJson,
-            text: JSON.stringify(epic),
-          },
-        ],
-      };
-    },
+      },
+    ),
   );
 
   server.resource(
     "epic-statistics",
-    new ResourceTemplate("epics://{sessionCode}/statistics", {
+    new ResourceTemplate(`${ResourceName}://{sessionCode}/statistics`, {
       list: undefined,
     }),
-    async (uri, body) => {
-      const parsed = await mcpParseResource(
-        body,
-        z.object({
-          sessionCode: z.string(),
-        }),
-      );
-
-      if (!parsed.success) {
+    {
+      name: "Get epic statistics",
+      description: Descriptions.Statistics,
+    },
+    parseAndAuthorizeResource(
+      z.object({
+        sessionCode: z.string(),
+        epicId: z.string().ulid(),
+      }),
+      async (uri, data, user) => {
+        const stats = await service.statistics();
         return {
-          contents: parsed.errorMessages.map((msg) => ({
-            uri: uri.href,
-            text: msg,
+          contents: stats.map((epic) => ({
+            uri: `epics://{sessionCOde}/${epic.epicId}`,
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(epic),
           })),
         };
-      }
-
-      const authorized = await mcpAuthorize({
-        type: "resource",
-        uri: uri,
-        sessionCode: parsed.data.sessionCode,
-      });
-
-      if (!authorized.success) {
-        return {
-          contents: [
-            {
-              uri: uri.href,
-              text: MessageConstants.Forbidden,
-            },
-          ],
-        };
-      }
-
-      const stats = await service.statistics();
-      return {
-        contents: stats.map((epic) => ({
-          uri: `epics://{sessionCOde}/${epic.epicId}`,
-          mimeType: MimeTypeJson,
-          text: JSON.stringify(epic),
-        })),
-      };
-    },
+      },
+    ),
   );
 
   server.tool(
     "create-epic",
+    Descriptions.Create,
     { sessionCode: z.string(), title: z.string() },
-    async (body) => {
-      const authorized = await mcpAuthorize({
-        type: "tool",
-        resource: "epics",
-        sessionCode: body.sessionCode,
-      });
-
-      if (!authorized.success) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: MessageConstants.Forbidden,
-            },
-          ],
-        };
-      }
-
+    authorizeTool(Actions.Create, ResourceName, async (body, user) => {
       const epic = await service.create({
-        userId: authorized.userId,
+        userId: user.id,
         title: body.title,
       });
+
       return {
         content: [
           {
@@ -193,6 +126,65 @@ export default function mcpEpicHandlers(server: McpServer) {
           },
         ],
       };
-    },
+    }),
+  );
+
+  server.tool(
+    "rename-epic",
+    Descriptions.Rename,
+    { sessionCode: z.string(), epicId: z.string().ulid(), title: z.string() },
+    authorizeTool(Actions.Update, ResourceName, async (body, user) => {
+      const isExists = await service.isExists(body.epicId);
+      if (!isExists) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Epic not found",
+            },
+          ],
+        };
+      }
+
+      const epic = await service.update(body.epicId, body.title);
+      return {
+        content: [
+          {
+            type: "text",
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(epic),
+          },
+        ],
+      };
+    }),
+  );
+
+  server.tool(
+    "delete-epic",
+    Descriptions.Delete,
+    { sessionCode: z.string(), epicId: z.string().ulid() },
+    authorizeTool(Actions.Delete, ResourceName, async (body, user) => {
+      const isExists = await service.isExists(body.epicId);
+      if (!isExists) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Epic not found",
+            },
+          ],
+        };
+      }
+
+      const success = await service.remove(body.epicId);
+      return {
+        content: [
+          {
+            type: "text",
+            text: getDeleteMessage(success, "epic"),
+          },
+        ],
+      };
+    }),
   );
 }

@@ -1,72 +1,144 @@
+import { z } from "zod";
 import { eq } from "drizzle-orm";
-import type { z } from "zod";
 import type { JwtVariables } from "hono/jwt";
+import type {
+  ReadResourceResult,
+  CallToolResult,
+  ServerRequest,
+  ServerNotification,
+} from "@modelcontextprotocol/sdk/types";
+import type {
+  ReadResourceTemplateCallback,
+  ToolCallback,
+} from "@modelcontextprotocol/sdk/server/mcp";
+import type { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol";
 
 import { db, sessionsTable, usersTable } from "~/db";
-import { permit, type UserRole } from "~/utils";
+import { MessageConstants, permit, type UserRole } from "~/utils";
 
-export type CustomJwtPayload = {
+export type CustomJwtVariables = JwtVariables<{
   sub: string;
   role: string;
-};
+}>;
 
-export type CustomJwtVariables = JwtVariables<CustomJwtPayload>;
+const BaseResourceSchema = z.object({
+  sessionCode: z.string(),
+});
 
-export type SimpleUser = {
-  userId: string;
-  userName: string;
-  fullName: string;
-};
+export function parseAndAuthorizeResource<T extends z.AnyZodObject>(
+  schema: T,
+  cb: (
+    uri: URL,
+    data: z.infer<typeof schema>,
+    user: { id: string; role: UserRole },
+  ) => ReadResourceResult | Promise<ReadResourceResult>,
+): ReadResourceTemplateCallback {
+  return async (
+    uri: URL,
+    variables: Record<string, string | string[]>,
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
+  ): Promise<ReadResourceResult> => {
+    // parse zod schema
+    const parsed = BaseResourceSchema.merge(schema).safeParse(variables);
+    if (!parsed.success) {
+      return {
+        contents: parsed.error.issues.map((issue) => ({
+          uri: uri.href,
+          text: issue.message,
+        })),
+      };
+    }
 
-export async function mcpParseResource<T>(
-  body: unknown,
-  schema: z.ZodType<T>,
-): Promise<
-  | { success: true; data: z.infer<typeof schema> }
-  | { success: false; errorMessages: string[] }
-> {
-  const parsed = schema.safeParse(body);
-  if (!parsed.success) {
-    return {
-      success: false,
-      errorMessages: parsed.error.issues.map((issue) => issue.message),
-    };
-  }
+    // query user data
+    const rows = await db
+      .select()
+      .from(sessionsTable)
+      .innerJoin(usersTable, eq(usersTable.id, sessionsTable.user_id))
+      .where(eq(sessionsTable.code, parsed.data.sessionCode));
 
-  return { success: true, data: parsed.data };
+    if (rows.length === 0) {
+      return {
+        contents: [
+          {
+            uri: uri.href,
+            text: MessageConstants.Forbidden,
+          },
+        ],
+      };
+    }
+
+    // authorize with Permit.io
+    const user = rows[0];
+    const resource = uri.protocol;
+
+    const permitted = await permit.check(user.users.id, "read", resource);
+    if (!permitted) {
+      return {
+        contents: [
+          {
+            uri: uri.href,
+            text: MessageConstants.Forbidden,
+          },
+        ],
+      };
+    }
+
+    return await cb(uri, parsed.data, {
+      id: user.users.id,
+      role: user.users.role as UserRole,
+    });
+  };
 }
 
-export async function mcpAuthorize(
-  input:
-    | { type: "tool"; sessionCode: string; resource: string }
-    | { type: "resource"; sessionCode: string; uri: URL },
-): Promise<
-  { success: true; userId: string; role: UserRole } | { success: false }
-> {
-  const rows = await db
-    .select()
-    .from(sessionsTable)
-    .innerJoin(usersTable, eq(usersTable.id, sessionsTable.user_id))
-    .where(eq(sessionsTable.code, input.sessionCode));
+export function authorizeTool<T extends z.ZodRawShape>(
+  action: string,
+  resource: string,
+  cb: (
+    data: z.objectOutputType<T, z.ZodTypeAny>,
+    user: { id: string; role: UserRole },
+  ) => Promise<CallToolResult>,
+): ToolCallback<T> {
+  // @ts-ignore
+  return async (
+    args: z.objectOutputType<T, z.ZodTypeAny>,
+    extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
+  ): Promise<CallToolResult> => {
+    // query the user data
+    const rows = await db
+      .select()
+      .from(sessionsTable)
+      .innerJoin(usersTable, eq(usersTable.id, sessionsTable.user_id))
+      .where(eq(sessionsTable.code, args.sessionCode));
 
-  if (rows.length === 0) {
-    return { success: false };
-  }
+    if (rows.length === 0) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: MessageConstants.Forbidden,
+          },
+        ],
+      };
+    }
 
-  const user = rows[0];
-  const resource =
-    input.type === "resource" ? input.uri.protocol : input.resource;
+    // authorize with Permit.io
+    const user = rows[0];
 
-  const permitted = await permit.check(user.users.id, "read", resource);
-  if (!permitted) {
-    return {
-      success: false,
-    };
-  }
+    const permitted = await permit.check(user.users.id, action, resource);
+    if (!permitted) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: MessageConstants.Forbidden,
+          },
+        ],
+      };
+    }
 
-  return {
-    success: true,
-    userId: user.users.id,
-    role: user.users.role as UserRole,
+    return await cb(args, {
+      id: user.users.id,
+      role: user.users.role as UserRole,
+    });
   };
 }

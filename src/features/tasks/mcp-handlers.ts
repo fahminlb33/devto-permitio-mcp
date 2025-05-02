@@ -4,63 +4,332 @@ import {
   ResourceTemplate,
 } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { MessageConstants, MimeTypeJson } from "~/utils";
-import { mcpAuthorize, mcpParseResource } from "~/features/common";
+import { getDeleteMessage, MimeTypeJson } from "~/utils";
+import { authorizeTool, parseAndAuthorizeResource } from "~/features/common";
 
 import * as service from "./service";
 
+const ResourceName = "tasks";
+
+enum Actions {
+  Create = "create",
+  Update = "update",
+  Delete = "delete",
+  Assign = "assign",
+  Unassign = "unassign",
+  LogWork = "log-work",
+}
+
+enum Descriptions {
+  List = "List ",
+  Statistics = "",
+  Detail = "",
+  Create = "",
+  Update = "",
+  Delete = "Delete ",
+  Assign = "Assign",
+  Unassign = "",
+  LogWork = "",
+}
+
 export default function mcpTaskHandlers(server: McpServer) {
   server.resource(
-    "list-epics",
-    new ResourceTemplate("epics://{sessionCode}/list", { list: undefined }),
-    async (uri, body) => {
-      const parsed = await mcpParseResource(
-        body,
-        z.object({
-          sessionCode: z.string(),
-        }),
-      );
-
-      if (!parsed.success) {
+    "list-tasks",
+    new ResourceTemplate(`${ResourceName}://{sessionCode}/list`, {
+      list: undefined,
+    }),
+    {
+      name: "List tasks",
+      description: Descriptions.List,
+    },
+    parseAndAuthorizeResource(
+      z.object({ sessionCode: z.string() }),
+      async (uri, data, user) => {
+        const userId = user.role === "Developer" ? user.id : undefined;
+        const users = await service.list(userId);
         return {
-          contents: parsed.errorMessages.map((msg) => ({
-            uri: uri.href,
-            text: msg,
+          contents: users.map((u) => ({
+            uri: `${ResourceName}://{sessionCode}/${u.taskId}`,
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(u),
           })),
         };
-      }
+      },
+    ),
+  );
 
-      const authorized = await mcpAuthorize({
-        type: "resource",
-        uri: uri,
-        sessionCode: parsed.data.sessionCode,
-      });
+  server.resource(
+    "tasks-statistics",
+    new ResourceTemplate(`${ResourceName}://{sessionCode}/statistics`, {
+      list: undefined,
+    }),
+    {
+      name: "Get task statistics",
+      description: Descriptions.Statistics,
+    },
+    parseAndAuthorizeResource(
+      z.object({ sessionCode: z.string() }),
+      async (uri, data, user) => {
+        const stats = await service.statisticsByUser();
+        return {
+          contents: stats.map((u) => ({
+            uri: `${ResourceName}://{sessionCode}/${u.taskId}`,
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(u),
+          })),
+        };
+      },
+    ),
+  );
 
-      if (!authorized.success) {
+  server.resource(
+    "task-detail",
+    new ResourceTemplate(`${ResourceName}://{sessionCode}/{taskId}`, {
+      list: undefined,
+    }),
+    {
+      name: "Get task detail",
+      description: Descriptions.Detail,
+    },
+    parseAndAuthorizeResource(
+      z.object({ sessionCode: z.string(), taskId: z.string().ulid() }),
+      async (uri, data, user) => {
+        const task = await service.get(data.taskId);
+        if (!task) {
+          return {
+            contents: [
+              {
+                uri: uri.href,
+                text: "Task not found",
+              },
+            ],
+          };
+        }
+
         return {
           contents: [
             {
               uri: uri.href,
-              text: MessageConstants.Forbidden,
+              mimeType: MimeTypeJson,
+              text: JSON.stringify(task),
+            },
+          ],
+        };
+      },
+    ),
+  );
+
+  server.tool(
+    "create-task",
+    Descriptions.Create,
+    {
+      sessionCode: z.string(),
+      epicId: z.string().ulid(),
+      title: z.string(),
+      description: z.string(),
+    },
+    authorizeTool(Actions.Update, ResourceName, async (body, user) => {
+      const isExists = await service.isEpicExists(body.epicId);
+      if (!isExists) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Epic not found",
             },
           ],
         };
       }
 
-      const userId =
-        authorized.role === "developer" ? authorized.userId : undefined;
-      const users = await service.list(userId);
+      const result = await service.create({
+        userId: user.id,
+        epicId: body.epicId,
+        title: body.title,
+        description: body.description,
+      });
+
       return {
-        contents: users.map((u) => ({
-          uri: `tasks://{sessionCode}/${u.taskId}`,
-          text: JSON.stringify(u),
-        })),
+        content: [
+          {
+            type: "text",
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(result),
+          },
+        ],
       };
-    },
+    }),
   );
 
-  const UserProfileSchema = z.object({
-    sessionCode: z.string(),
-    userName: z.string(),
-  });
+  server.tool(
+    "update-task",
+    Descriptions.Update,
+    {
+      sessionCode: z.string(),
+      taskId: z.string().ulid(),
+      title: z.string(),
+      description: z.string(),
+    },
+    authorizeTool(Actions.Update, ResourceName, async (body, user) => {
+      const isExists = await service.isExists(body.commentId);
+      if (!isExists) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Task not found",
+            },
+          ],
+        };
+      }
+
+      const result = await service.update(
+        body.taskId,
+        body.title,
+        body.description,
+      );
+
+      return {
+        content: [
+          {
+            type: "text",
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(result),
+          },
+        ],
+      };
+    }),
+  );
+
+  server.tool(
+    "delete-task",
+    Descriptions.Delete,
+    { sessionCode: z.string(), epicId: z.string().ulid() },
+    authorizeTool(Actions.Delete, ResourceName, async (body, user) => {
+      const isExists = await service.isExists(body.commentId);
+      if (!isExists) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Task not found",
+            },
+          ],
+        };
+      }
+
+      const success = await service.remove(body.epicId);
+      return {
+        content: [
+          {
+            type: "text",
+            text: getDeleteMessage(success, "task"),
+          },
+        ],
+      };
+    }),
+  );
+
+  server.tool(
+    "assign-task",
+    Descriptions.Assign,
+    {
+      sessionCode: z.string(),
+      taskId: z.string().ulid(),
+      userId: z.string().ulid(),
+    },
+    authorizeTool(Actions.Assign, ResourceName, async (body, user) => {
+      const isExists = await service.isExists(body.commentId);
+      if (!isExists) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Task not found",
+            },
+          ],
+        };
+      }
+
+      const result = await service.assign(body.taskId, body.userId);
+      return {
+        content: [
+          {
+            type: "text",
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(result),
+          },
+        ],
+      };
+    }),
+  );
+
+  server.tool(
+    "unassign-task",
+    Descriptions.Unassign,
+    { sessionCode: z.string(), taskId: z.string().ulid() },
+    authorizeTool(Actions.Assign, ResourceName, async (body, user) => {
+      const isExists = await service.isExists(body.commentId);
+      if (!isExists) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Task not found",
+            },
+          ],
+        };
+      }
+
+      const result = await service.unassign(body.taskId);
+      return {
+        content: [
+          {
+            type: "text",
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(result),
+          },
+        ],
+      };
+    }),
+  );
+
+  server.tool(
+    "log-work-on-task",
+    Descriptions.LogWork,
+    {
+      sessionCode: z.string(),
+      taskId: z.string().ulid(),
+      status: z.enum(["TODO", "IN_PROGRESS", "DONE"]),
+      incrementTimeSpentInMinutes: z.number().min(0),
+    },
+    authorizeTool(Actions.Assign, ResourceName, async (body, user) => {
+      const isExists = await service.isExists(body.commentId);
+      if (!isExists) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Task not found",
+            },
+          ],
+        };
+      }
+
+      const result = await service.logWork(
+        body.taskId,
+        body.status,
+        body.incrementTimeSpentInMinutes,
+      );
+
+      return {
+        content: [
+          {
+            type: "text",
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(result),
+          },
+        ],
+      };
+    }),
+  );
 }

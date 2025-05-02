@@ -5,124 +5,77 @@ import {
 } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 import { sprintf, MessageConstants, MimeTypeJson } from "~/utils";
-import { mcpAuthorize, mcpParseResource } from "~/features/common";
+import { parseAndAuthorizeResource } from "~/features/common";
 
 import * as service from "./service";
 
+enum Descriptions {
+  List = "List all registered user in the system, returning the user profile information.",
+  MyProfile = "Get a detailed profile of the user based on its session code, the data includes the user's email, name, and role.",
+  GetProfile = "Get a detailed profile of the used based on the provided email",
+}
+
 export default function mcpUserHandlers(server: McpServer) {
+  server.resource(
+    "list-users",
+    new ResourceTemplate("users://{sessionCode}/list", { list: undefined }),
+    {
+      name: "List tasks",
+      description: Descriptions.List,
+    },
+    parseAndAuthorizeResource(
+      z.object({ sessionCode: z.string() }),
+      async (uri, data, user) => {
+        const users = await service.list();
+        return {
+          contents: users.map((user) => ({
+            uri: `users://{sessionCode}/${user.email}/profile`,
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(user),
+          })),
+        };
+      },
+    ),
+  );
+
   server.resource(
     "my-profile",
     new ResourceTemplate("users://{sessionCode}/profile", {
       list: undefined,
     }),
-    async (uri, body) => {
-      const parsed = await mcpParseResource(
-        body,
-        z.object({
-          sessionCode: z.string(),
-        }),
-      );
-
-      if (!parsed.success) {
-        return {
-          contents: parsed.errorMessages.map((msg) => ({
-            uri: uri.href,
-            text: msg,
-          })),
-        };
-      }
-
-      const authorized = await mcpAuthorize({
-        type: "resource",
-        uri: uri,
-        sessionCode: parsed.data.sessionCode,
-      });
-
-      if (!authorized.success) {
-        return {
-          contents: [
-            {
-              uri: uri.href,
-              text: MessageConstants.Forbidden,
-            },
-          ],
-        };
-      }
-
-      const user = await service.get({
-        type: "id",
-        value: authorized.userId,
-      });
-      if (!user) {
-        return {
-          contents: [
-            {
-              uri: uri.href,
-              text: MessageConstants.InvalidSession,
-            },
-          ],
-        };
-      }
-
-      return {
-        contents: [
-          {
-            uri: uri.href,
-            mimeType: MimeTypeJson,
-            text: JSON.stringify(user),
-          },
-        ],
-      };
+    {
+      name: "List tasks",
+      description: Descriptions.MyProfile,
     },
-  );
+    parseAndAuthorizeResource(
+      z.object({ sessionCode: z.string() }),
+      async (uri, data, user) => {
+        const profile = await service.get({
+          type: "id",
+          value: user.id,
+        });
+        if (!user) {
+          return {
+            contents: [
+              {
+                uri: uri.href,
+                text: MessageConstants.InvalidSession,
+              },
+            ],
+          };
+        }
 
-  server.resource(
-    "list-users",
-    new ResourceTemplate("users://{sessionCode}/list", { list: undefined }),
-    async (uri, body) => {
-      const parsed = await mcpParseResource(
-        body,
-        z.object({
-          sessionCode: z.string(),
-          email: z.string().email(),
-        }),
-      );
-
-      if (!parsed.success) {
-        return {
-          contents: parsed.errorMessages.map((msg) => ({
-            uri: uri.href,
-            text: msg,
-          })),
-        };
-      }
-
-      const authorized = await mcpAuthorize({
-        type: "resource",
-        uri: uri,
-        sessionCode: parsed.data.sessionCode,
-      });
-
-      if (!authorized.success) {
         return {
           contents: [
             {
               uri: uri.href,
-              text: MessageConstants.Forbidden,
+              mimeType: MimeTypeJson,
+              text: JSON.stringify(profile),
             },
           ],
         };
-      }
-
-      const users = await service.list();
-      return {
-        contents: users.map((user) => ({
-          uri: `users://{sessionCode}/${user.email}/profile`,
-          mimeType: MimeTypeJson,
-          text: JSON.stringify(user),
-        })),
-      };
-    },
+      },
+    ),
   );
 
   server.resource(
@@ -130,65 +83,38 @@ export default function mcpUserHandlers(server: McpServer) {
     new ResourceTemplate("users://{sessionCode}/{email}/profile", {
       list: undefined,
     }),
-    async (uri, body) => {
-      const parsed = await mcpParseResource(
-        body,
-        z.object({
-          sessionCode: z.string(),
-          email: z.string().email(),
-        }),
-      );
-
-      if (!parsed.success) {
-        return {
-          contents: parsed.errorMessages.map((msg) => ({
-            uri: uri.href,
-            text: msg,
-          })),
-        };
-      }
-
-      const authorized = await mcpAuthorize({
-        type: "resource",
-        uri: uri,
-        sessionCode: parsed.data.sessionCode,
-      });
-
-      if (!authorized.success) {
-        return {
-          contents: [
-            {
-              uri: uri.href,
-              text: MessageConstants.Forbidden,
-            },
-          ],
-        };
-      }
-
-      const user = await service.get({
-        type: "email",
-        value: parsed.data.email,
-      });
-      if (!user) {
-        return {
-          contents: [
-            {
-              uri: uri.href,
-              text: sprintf(MessageConstants.UserNotFound, parsed.data.email),
-            },
-          ],
-        };
-      }
-
-      return {
-        contents: [
-          {
-            uri: uri.href,
-            mimeType: MimeTypeJson,
-            text: JSON.stringify(user),
-          },
-        ],
-      };
+    {
+      name: "List tasks",
+      description: Descriptions.GetProfile,
     },
+    parseAndAuthorizeResource(
+      z.object({ sessionCode: z.string(), email: z.string().email() }),
+      async (uri, data, user) => {
+        const profile = await service.get({
+          type: "email",
+          value: data.email,
+        });
+        if (!user) {
+          return {
+            contents: [
+              {
+                uri: uri.href,
+                text: sprintf(MessageConstants.UserNotFound, data.email),
+              },
+            ],
+          };
+        }
+
+        return {
+          contents: [
+            {
+              uri: uri.href,
+              mimeType: MimeTypeJson,
+              text: JSON.stringify(profile),
+            },
+          ],
+        };
+      },
+    ),
   );
 }
