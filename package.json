@@ -14,7 +14,7 @@
     "permit:clear": "tsx tools/sync-clear.ts",
     "permit:sync": "tsx tools/sync-permit.ts",
     "dev:api": "tsx watch src/app.hono.ts",
-    "dev:mcp": "npm run build && npx @modelcontextprotocol/inspector node dist/app.mcp.js",
+    "dev:mcp": "npm run build:mcp && npx @modelcontextprotocol/inspector node dist/app.mcp.js",
     "start:mcp": "node dist/app.mcp.js",
     "start:api": "node dist/app.api.js",
     "type-check": "npx tsc"
