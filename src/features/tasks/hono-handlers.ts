@@ -9,6 +9,16 @@ import * as service from "./service";
 
 const app = new Hono<{ Variables: CustomJwtVariables }>();
 
+app.get("/statistics/users", async (c) => {
+  const stats = await service.statisticsByUser();
+  return c.json(stats);
+});
+
+app.get("/statistics/tasks", async (c) => {
+  const stats = await service.statisticsByTask();
+  return c.json(stats);
+});
+
 app.patch(
   "/:taskId/assign",
   zValidator(
@@ -69,7 +79,7 @@ app.patch(
   zValidator(
     "json",
     z.object({
-      status: z.enum(["TODO", "IN_PROGRESS", "DONE"]),
+      status: z.enum(["IN_PROGRESS", "DONE"]),
       incrementTimeSpentInMinutes: z.number().min(0),
     }),
   ),
@@ -90,11 +100,6 @@ app.patch(
     return c.json(result);
   },
 );
-
-app.get("/statistics", async (c) => {
-  const stats = await service.statisticsByUser();
-  return c.json(stats);
-});
 
 app.get(
   "/:taskId",
@@ -171,13 +176,18 @@ app.delete(
   },
 );
 
-app.get("/", async (c) => {
-  const jwt = c.get("jwtPayload");
-  const userId = jwt.role === "Developer" ? jwt.sub : undefined;
+app.get(
+  "/",
+  zValidator("query", z.object({ epicId: z.string().ulid().optional() })),
+  async (c) => {
+    const jwt = c.get("jwtPayload");
+    const query = c.req.valid("query");
+    const userId = jwt.role === "Developer" ? jwt.sub : undefined;
 
-  const tasks = await service.list(userId);
-  return c.json(tasks);
-});
+    const tasks = await service.list(query.epicId, userId);
+    return c.json(tasks);
+  },
+);
 
 app.post(
   "/",
@@ -199,10 +209,11 @@ app.post(
     }
 
     const result = await service.create({
-      userId: jwt.sub,
-      epicId: body.epicId,
       title: body.title,
       description: body.description,
+      epicId: body.epicId,
+      userId: jwt.sub,
+      userRole: jwt.role,
     });
 
     return c.json(result, HttpStatus.Created);

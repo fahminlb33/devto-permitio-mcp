@@ -81,9 +81,10 @@ app.post(
     }
 
     const comment = await service.create({
-      userId: jwt.sub,
       content: body.content,
       taskId: body.taskId,
+      userId: jwt.sub,
+      userRole: jwt.role,
     });
 
     return c.json(comment, HttpStatus.Created);

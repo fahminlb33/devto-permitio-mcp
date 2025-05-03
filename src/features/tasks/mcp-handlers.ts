@@ -22,7 +22,8 @@ enum Actions {
 
 enum Descriptions {
   List = "List ",
-  Statistics = "",
+  StatisticsByUser = "",
+  StatisticsByTask = "",
   Detail = "",
   Create = "",
   Update = "",
@@ -59,13 +60,38 @@ export default function mcpTaskHandlers(server: McpServer) {
   );
 
   server.resource(
-    "tasks-statistics",
-    new ResourceTemplate(`${ResourceName}://{sessionCode}/statistics`, {
+    "list-tasks",
+    new ResourceTemplate(`${ResourceName}://{sessionCode}/list/{epicId}`, {
       list: undefined,
     }),
     {
-      name: "Get task statistics",
-      description: Descriptions.Statistics,
+      name: "List tasks",
+      description: Descriptions.List,
+    },
+    parseAndAuthorizeResource(
+      z.object({ sessionCode: z.string(), epicId: z.string().ulid() }),
+      async (uri, data, user) => {
+        const userId = user.role === "Developer" ? user.id : undefined;
+        const users = await service.list(data.epicId, userId);
+        return {
+          contents: users.map((u) => ({
+            uri: `${ResourceName}://{sessionCode}/${u.taskId}`,
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(u),
+          })),
+        };
+      },
+    ),
+  );
+
+  server.resource(
+    "tasks-statistics-by-user",
+    new ResourceTemplate(`${ResourceName}://{sessionCode}/statistics/by-user`, {
+      list: undefined,
+    }),
+    {
+      name: "Get task statistics grouped by user",
+      description: Descriptions.StatisticsByUser,
     },
     parseAndAuthorizeResource(
       z.object({ sessionCode: z.string() }),
@@ -73,7 +99,31 @@ export default function mcpTaskHandlers(server: McpServer) {
         const stats = await service.statisticsByUser();
         return {
           contents: stats.map((u) => ({
-            uri: `${ResourceName}://{sessionCode}/${u.taskId}`,
+            uri: `${ResourceName}://{sessionCode}/statistics/by-user`,
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(u),
+          })),
+        };
+      },
+    ),
+  );
+
+  server.resource(
+    "tasks-statistics-by-task",
+    new ResourceTemplate(`${ResourceName}://{sessionCode}/statistics/by-task`, {
+      list: undefined,
+    }),
+    {
+      name: "Get task statistics grouped by user",
+      description: Descriptions.StatisticsByTask,
+    },
+    parseAndAuthorizeResource(
+      z.object({ sessionCode: z.string() }),
+      async (uri, data, user) => {
+        const stats = await service.statisticsByTask();
+        return {
+          contents: stats.map((u) => ({
+            uri: `${ResourceName}://{sessionCode}/statistics/by-task`,
             mimeType: MimeTypeJson,
             text: JSON.stringify(u),
           })),
@@ -142,10 +192,11 @@ export default function mcpTaskHandlers(server: McpServer) {
       }
 
       const result = await service.create({
-        userId: user.id,
-        epicId: body.epicId,
         title: body.title,
         description: body.description,
+        epicId: body.epicId,
+        userId: user.id,
+        userRole: user.role,
       });
 
       return {

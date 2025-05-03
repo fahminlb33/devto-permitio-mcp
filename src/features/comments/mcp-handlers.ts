@@ -74,9 +74,10 @@ export default function mcpCommentHandlers(server: McpServer) {
       }
 
       const comment = await service.create({
-        userId: user.id,
-        taskId: body.taskId,
         content: body.content,
+        taskId: body.taskId,
+        userId: user.id,
+        userRole: user.role,
       });
 
       return {

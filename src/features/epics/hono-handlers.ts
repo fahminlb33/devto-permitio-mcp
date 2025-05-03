@@ -84,6 +84,7 @@ app.post(
     const epic = await service.create({
       title: body.title,
       userId: jwt.sub,
+      userRole: jwt.role,
     });
 
     return c.json(epic, HttpStatus.Created);

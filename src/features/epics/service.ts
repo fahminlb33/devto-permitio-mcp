@@ -2,12 +2,14 @@ import { ulid } from "ulid";
 import { and, count, eq, desc, or, sql } from "drizzle-orm";
 
 import { db, epicsTable, tasksTable, usersTable } from "~/db";
-import { permit } from "~/utils";
+import { getConfig, permit } from "~/utils";
+
+const config = getConfig();
 
 export type Epic = {
   epicId: string;
   title: string;
-  createdAt: string;
+  createdAt: Date;
   createdBy: string;
 };
 
@@ -37,7 +39,8 @@ export async function get(epicId: string) {
       epicsTable.created_at,
       epicsTable.created_by,
     )
-    .having(eq(epicsTable.id, epicId));
+    .having(eq(epicsTable.id, epicId))
+    .limit(1);
 
   const epics = await query;
   if (epics.length === 0) {
@@ -58,7 +61,7 @@ export async function get(epicId: string) {
 export async function list(userId: string): Promise<Epic[]> {
   const shouldFilterUser = await db.$count(
     usersTable,
-    and(eq(usersTable.id, userId), eq(usersTable.role, "developer")),
+    and(eq(usersTable.id, userId), eq(usersTable.role, "Developer")),
   );
 
   const query = db
@@ -69,14 +72,17 @@ export async function list(userId: string): Promise<Epic[]> {
       createdBy: epicsTable.created_by,
     })
     .from(epicsTable)
-    .innerJoin(usersTable, eq(epicsTable.id, usersTable.id))
-    .innerJoin(tasksTable, eq(epicsTable.id, tasksTable.epic_id))
     .orderBy(desc(epicsTable.created_at));
 
-  if (shouldFilterUser) {
-    query.where(
-      or(eq(epicsTable.created_by, userId), eq(tasksTable.created_by, userId)),
-    );
+  if (shouldFilterUser !== 0) {
+    query
+      .innerJoin(tasksTable, eq(tasksTable.epic_id, epicsTable.id))
+      .where(
+        or(
+          eq(epicsTable.created_by, userId),
+          eq(tasksTable.created_by, userId),
+        ),
+      );
   }
 
   const epics = await query;
@@ -87,7 +93,7 @@ export async function list(userId: string): Promise<Epic[]> {
   return epics.map((epic) => ({
     epicId: epic.id,
     title: epic.title,
-    createdAt: epic.createdAt,
+    createdAt: new Date(epic.createdAt),
     createdBy: epic.createdBy,
   }));
 }
@@ -109,7 +115,7 @@ export async function statistics(): Promise<EpicStatistic[]> {
       taskCount: count(tasksTable.id),
       todoTaskCount: sql<number>`sum(case when ${tasksTable.status} = 'TODO' then 1 else 0 end)`,
       inProgressTaskCount: sql<number>`sum(case when ${tasksTable.status} = 'IN_PROGRESS' then 1 else 0 end)`,
-      completedTaskCount: sql<number>`sum(case when ${tasksTable.status} = 'COMPLETED' then 1 else 0 end)`,
+      completedTaskCount: sql<number>`sum(case when ${tasksTable.status} = 'DONE' then 1 else 0 end)`,
     })
     .from(epicsTable)
     .innerJoin(tasksTable, eq(epicsTable.id, tasksTable.epic_id))
@@ -136,8 +142,9 @@ export async function statistics(): Promise<EpicStatistic[]> {
 // ----- commands
 
 export async function create(data: {
-  userId: string;
   title: string;
+  userId: string;
+  userRole: string;
 }): Promise<Epic> {
   const epic = await db
     .insert(epicsTable)
@@ -152,14 +159,24 @@ export async function create(data: {
   const c = epic[0];
 
   await permit.api.resourceInstances.create({
+    key: c.id,
     resource: "Epic",
-    key: `Epic:${c.id}`,
+    tenant: config.permit.tenant,
   });
+
+  if (data.userRole !== "Admin") {
+    await permit.api.roleAssignments.assign({
+      user: data.userId,
+      role: data.userRole,
+      tenant: config.permit.tenant,
+      resource_instance: `Epic:${c.id}`,
+    });
+  }
 
   return {
     epicId: c.id,
     title: c.title,
-    createdAt: c.created_at,
+    createdAt: new Date(c.created_at),
     createdBy: c.created_by,
   };
 }
@@ -177,17 +194,17 @@ export async function update(id: string, title: string): Promise<Epic> {
   return {
     epicId: c.id,
     title: c.title,
-    createdAt: c.created_at,
+    createdAt: new Date(c.created_at),
     createdBy: c.created_by,
   };
 }
 
-export async function remove(id: string) {
-  const rows = await db.delete(epicsTable).where(eq(epicsTable.id, id));
+export async function remove(epicId: string) {
+  const rows = await db.delete(epicsTable).where(eq(epicsTable.id, epicId));
   if (rows.rowsAffected === 0) {
     return false;
   }
 
-  await permit.api.resourceInstances.delete(id);
+  await permit.api.resourceInstances.delete(`Epic:${epicId}`);
   return true;
 }

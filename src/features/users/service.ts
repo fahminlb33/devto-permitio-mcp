@@ -43,7 +43,8 @@ export async function get(identifier: GetUserType): Promise<User | null> {
       .select()
       .from(usersTable)
       .innerJoin(sessionsTable, eq(sessionsTable.user_id, usersTable.id))
-      .where(eq(sessionsTable.code, identifier.value));
+      .where(eq(sessionsTable.code, identifier.value))
+      .limit(1);
 
     if (user.length === 0) {
       return null;
@@ -68,7 +69,8 @@ export async function get(identifier: GetUserType): Promise<User | null> {
   const query = db
     .select()
     .from(usersTable)
-    .where(eq(col[identifier.type], identifier.value));
+    .where(eq(col[identifier.type], identifier.value))
+    .limit(1);
 
   const user = await query;
   if (user.length === 0) {

@@ -2,7 +2,9 @@ import { eq } from "drizzle-orm";
 import { ulid } from "ulid";
 
 import { db, commentsTable, tasksTable } from "~/db";
-import { permit } from "~/utils";
+import { getConfig, permit } from "~/utils";
+
+const config = getConfig();
 
 export type CommentItem = {
   commentId: string;
@@ -48,9 +50,12 @@ export async function list(taskId?: string): Promise<CommentItem[]> {
 
 // ----- commands
 
-export async function create(
-  data: Omit<CommentItem, "commentId" | "createdAt"> & { userId: string },
-): Promise<CommentItem> {
+export async function create(data: {
+  content: string;
+  taskId: string;
+  userId: string;
+  userRole: string;
+}): Promise<CommentItem> {
   const rows = await db
     .insert(commentsTable)
     .values({
@@ -66,7 +71,24 @@ export async function create(
   await permit.api.resourceInstances.create({
     key: c.id,
     resource: "Comment",
+    tenant: config.permit.tenant,
   });
+
+  await permit.api.relationshipTuples.create({
+    subject: `Task:${c.task_id}`,
+    relation: "parent",
+    object: `Comment:${c.id}`,
+    tenant: config.permit.tenant,
+  });
+
+  if (data.userRole !== "Admin") {
+    await permit.api.roleAssignments.assign({
+      user: data.userId,
+      role: data.userRole,
+      tenant: config.permit.tenant,
+      resource_instance: `Comment:${data.taskId}`,
+    });
+  }
 
   return {
     commentId: c.id,
@@ -102,10 +124,10 @@ export async function remove(commentId: string): Promise<boolean> {
     .delete(commentsTable)
     .where(eq(commentsTable.id, commentId));
 
-  if (rows.rowsAffected > 0) {
+  if (rows.rowsAffected === 0) {
     return false;
   }
 
-  await permit.api.resourceInstances.delete(commentId);
+  await permit.api.resourceInstances.delete(`Comment:${commentId}`);
   return true;
 }

@@ -113,8 +113,9 @@ export default function mcpEpicHandlers(server: McpServer) {
     { sessionCode: z.string(), title: z.string() },
     authorizeTool(Actions.Create, ResourceName, async (body, user) => {
       const epic = await service.create({
-        userId: user.id,
         title: body.title,
+        userId: user.id,
+        userRole: user.role,
       });
 
       return {
