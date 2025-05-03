@@ -27,11 +27,11 @@ enum Descriptions {
 export default function mcpCommentHandlers(server: McpServer) {
   server.resource(
     "list-comments",
-    new ResourceTemplate("comments://{sessionCode}/{taskId}/list", {
+    new ResourceTemplate("comments://{sessionCode}/{taskId}", {
       list: undefined,
     }),
     {
-      name: "List tasks",
+      name: "List comments on task",
       description: Descriptions.List,
     },
     parseAndAuthorizeResource(

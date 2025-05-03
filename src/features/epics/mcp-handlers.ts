@@ -29,7 +29,7 @@ enum Descriptions {
 export default function mcpEpicHandlers(server: McpServer) {
   server.resource(
     "list-epics",
-    new ResourceTemplate(`${ResourceName}://{sessionCode}/list`, {
+    new ResourceTemplate(`${ResourceName}://{sessionCode}`, {
       list: undefined,
     }),
     {

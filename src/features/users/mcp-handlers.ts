@@ -18,9 +18,9 @@ enum Descriptions {
 export default function mcpUserHandlers(server: McpServer) {
   server.resource(
     "list-users",
-    new ResourceTemplate("users://{sessionCode}/list", { list: undefined }),
+    new ResourceTemplate("users://{sessionCode}", { list: undefined }),
     {
-      name: "List tasks",
+      name: "List users",
       description: Descriptions.List,
     },
     parseAndAuthorizeResource(
@@ -44,7 +44,7 @@ export default function mcpUserHandlers(server: McpServer) {
       list: undefined,
     }),
     {
-      name: "List tasks",
+      name: "Get current user profile",
       description: Descriptions.MyProfile,
     },
     parseAndAuthorizeResource(
@@ -80,11 +80,11 @@ export default function mcpUserHandlers(server: McpServer) {
 
   server.resource(
     "user-profile",
-    new ResourceTemplate("users://{sessionCode}/{email}/profile", {
+    new ResourceTemplate("users://{sessionCode}/{email}", {
       list: undefined,
     }),
     {
-      name: "List tasks",
+      name: "Get user profile for the specified email",
       description: Descriptions.GetProfile,
     },
     parseAndAuthorizeResource(

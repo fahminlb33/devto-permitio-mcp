@@ -14,7 +14,7 @@ import type {
 import type { RequestHandlerExtra } from "@modelcontextprotocol/sdk/shared/protocol";
 
 import { db, sessionsTable, usersTable } from "~/db";
-import { MessageConstants, permit, type UserRole } from "~/utils";
+import { MessageConstants, MimeTypeJson, permit, sentenceCase, type UserRole } from "~/utils";
 
 export type CustomJwtVariables = JwtVariables<{
   sub: string;
@@ -42,10 +42,11 @@ export function parseAndAuthorizeResource<T extends z.AnyZodObject>(
     const parsed = BaseResourceSchema.merge(schema).safeParse(variables);
     if (!parsed.success) {
       return {
-        contents: parsed.error.issues.map((issue) => ({
+        contents: [{
           uri: uri.href,
-          text: issue.message,
-        })),
+          mimeType: MimeTypeJson,
+          text: JSON.stringify(parsed.error.errors),
+        }],
       };
     }
 
@@ -69,7 +70,7 @@ export function parseAndAuthorizeResource<T extends z.AnyZodObject>(
 
     // authorize with Permit.io
     const user = rows[0];
-    const resource = uri.protocol;
+    const resource = sentenceCase(uri.protocol.slice(0, -2));
 
     const permitted = await permit.check(user.users.id, "read", resource);
     if (!permitted) {
@@ -92,7 +93,7 @@ export function parseAndAuthorizeResource<T extends z.AnyZodObject>(
 
 export function authorizeTool<T extends z.ZodRawShape>(
   action: string,
-  resource: string,
+  resourceName: string,
   cb: (
     data: z.objectOutputType<T, z.ZodTypeAny>,
     user: { id: string; role: UserRole },
@@ -123,6 +124,7 @@ export function authorizeTool<T extends z.ZodRawShape>(
 
     // authorize with Permit.io
     const user = rows[0];
+    const resource = sentenceCase(resourceName.slice(0, -1));
 
     const permitted = await permit.check(user.users.id, action, resource);
     if (!permitted) {

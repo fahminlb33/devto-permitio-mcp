@@ -36,7 +36,7 @@ enum Descriptions {
 export default function mcpTaskHandlers(server: McpServer) {
   server.resource(
     "list-tasks",
-    new ResourceTemplate(`${ResourceName}://{sessionCode}/list`, {
+    new ResourceTemplate(`${ResourceName}://{sessionCode}`, {
       list: undefined,
     }),
     {
@@ -48,31 +48,6 @@ export default function mcpTaskHandlers(server: McpServer) {
       async (uri, data, user) => {
         const userId = user.role === "Developer" ? user.id : undefined;
         const users = await service.list(userId);
-        return {
-          contents: users.map((u) => ({
-            uri: `${ResourceName}://{sessionCode}/${u.taskId}`,
-            mimeType: MimeTypeJson,
-            text: JSON.stringify(u),
-          })),
-        };
-      },
-    ),
-  );
-
-  server.resource(
-    "list-tasks",
-    new ResourceTemplate(`${ResourceName}://{sessionCode}/list/{epicId}`, {
-      list: undefined,
-    }),
-    {
-      name: "List tasks",
-      description: Descriptions.List,
-    },
-    parseAndAuthorizeResource(
-      z.object({ sessionCode: z.string(), epicId: z.string().ulid() }),
-      async (uri, data, user) => {
-        const userId = user.role === "Developer" ? user.id : undefined;
-        const users = await service.list(data.epicId, userId);
         return {
           contents: users.map((u) => ({
             uri: `${ResourceName}://{sessionCode}/${u.taskId}`,
