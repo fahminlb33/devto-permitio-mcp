@@ -58,12 +58,7 @@ export async function get(epicId: string) {
   };
 }
 
-export async function list(userId: string): Promise<Epic[]> {
-  const shouldFilterUser = await db.$count(
-    usersTable,
-    and(eq(usersTable.id, userId), eq(usersTable.role, "Developer")),
-  );
-
+export async function list(userId?: string): Promise<Epic[]> {
   const query = db
     .selectDistinct({
       id: epicsTable.id,
@@ -74,15 +69,10 @@ export async function list(userId: string): Promise<Epic[]> {
     .from(epicsTable)
     .orderBy(desc(epicsTable.created_at));
 
-  if (shouldFilterUser !== 0) {
+  if (userId) {
     query
       .innerJoin(tasksTable, eq(tasksTable.epic_id, epicsTable.id))
-      .where(
-        or(
-          eq(epicsTable.created_by, userId),
-          eq(tasksTable.created_by, userId),
-        ),
-      );
+      .where(eq(tasksTable.assigned_to, userId));
   }
 
   const epics = await query;
@@ -107,8 +97,8 @@ export type EpicStatistic = {
   completedTaskCount: number;
   completionPercentage: number;
 };
-export async function statistics(): Promise<EpicStatistic[]> {
-  const stats = await db
+export async function statistics(userId?: string): Promise<EpicStatistic[]> {
+  const query = db
     .select({
       id: epicsTable.id,
       title: epicsTable.title,
@@ -121,6 +111,12 @@ export async function statistics(): Promise<EpicStatistic[]> {
     .innerJoin(tasksTable, eq(epicsTable.id, tasksTable.epic_id))
     .groupBy(epicsTable.id, epicsTable.title)
     .orderBy(desc(epicsTable.created_at));
+
+  if (userId) {
+    query.having(eq(tasksTable.assigned_to, userId));
+  }
+
+  const stats = await query;
 
   if (stats.length === 0) {
     return [];

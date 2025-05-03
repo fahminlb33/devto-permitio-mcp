@@ -54,7 +54,8 @@ export default function mcpTaskHandlers(server: McpServer) {
       ResourceActions.Read,
       ResourceNames.Task,
       async (body, user) => {
-        const stats = await service.statisticsByUser();
+        const userId = user.role === "Developer" ? user.id : undefined;
+        const stats = await service.statisticsByUser(userId);
         return {
           content: stats.map((u) => ({
             type: "text",
@@ -74,7 +75,8 @@ export default function mcpTaskHandlers(server: McpServer) {
       ResourceActions.Read,
       ResourceNames.Task,
       async (body, user) => {
-        const stats = await service.statisticsByTask();
+        const userId = user.role === "Developer" ? user.id : undefined;
+        const stats = await service.statisticsByTask(userId);
         return {
           content: stats.map((u) => ({
             type: "text",

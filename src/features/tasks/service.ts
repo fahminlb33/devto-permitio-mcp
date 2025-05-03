@@ -13,6 +13,7 @@ export type Task = {
   timeSpentInMinutes: number;
   status: TaskStatus;
   epicId: string;
+  assignedTo: string | null;
   createdAt: Date;
   createdBy: string;
 };
@@ -56,20 +57,21 @@ export async function get(
     status: c.status as TaskStatus,
     commentsCount: commentsCount,
     epicId: c.epic_id,
+    assignedTo: c.assigned_to,
     createdAt: new Date(c.created_at),
     createdBy: c.created_by,
   };
 }
 
-export async function list(epicId?: string, userId?: string) {
+export async function list(epicId?: string, assignedUserId?: string) {
   const query = db.select().from(tasksTable);
 
   if (epicId) {
     query.where(eq(tasksTable.epic_id, epicId));
   }
 
-  if (userId) {
-    query.where(eq(tasksTable.created_by, userId));
+  if (assignedUserId) {
+    query.where(eq(tasksTable.assigned_to, assignedUserId));
   }
 
   const tasks = await query;
@@ -84,13 +86,14 @@ export async function list(epicId?: string, userId?: string) {
     timeSpentInMinutes: x.time_spent,
     status: x.status,
     epicId: x.epic_id,
+    assignedTo: x.assigned_to,
     createdAt: new Date(x.created_at),
     createdBy: x.created_by,
   }));
 }
 
-export async function statisticsByUser() {
-  const stats = await db
+export async function statisticsByUser(assignedUserId?: string) {
+  const query = db
     .select({
       userId: usersTable.id,
       firstName: usersTable.first_name,
@@ -101,6 +104,11 @@ export async function statisticsByUser() {
     .leftJoin(usersTable, eq(usersTable.id, tasksTable.assigned_to))
     .groupBy(usersTable.id, usersTable.first_name, usersTable.last_name);
 
+  if (assignedUserId) {
+    query.where(eq(tasksTable.assigned_to, assignedUserId));
+  }
+
+  const stats = await query;
   if (stats.length === 0) {
     return [];
   }
@@ -113,7 +121,7 @@ export async function statisticsByUser() {
   }));
 }
 
-export async function statisticsByTask() {
+export async function statisticsByTask(assignedUserId?: string) {
   const query = db
     .select({
       id: tasksTable.id,
@@ -133,12 +141,16 @@ export async function statisticsByTask() {
       tasksTable.created_by,
     );
 
-  const tasks = await query;
-  if (tasks.length === 0) {
+  if (assignedUserId) {
+    query.where(eq(tasksTable.assigned_to, assignedUserId));
+  }
+
+  const stats = await query;
+  if (stats.length === 0) {
     return [];
   }
 
-  return tasks.map((x) => ({
+  return stats.map((x) => ({
     taskId: x.id,
     title: x.title,
     epicId: x.epicId,
@@ -204,6 +216,7 @@ export async function create(data: {
     timeSpentInMinutes: c.time_spent,
     status: c.status as TaskStatus,
     epicId: c.epic_id,
+    assignedTo: c.assigned_to,
     createdAt: new Date(c.created_at),
     createdBy: c.created_by,
   };
@@ -285,6 +298,7 @@ export async function assign(taskId: string, userId: string): Promise<Task> {
     timeSpentInMinutes: c.time_spent,
     status: c.status as TaskStatus,
     epicId: c.epic_id,
+    assignedTo: c.assigned_to,
     createdAt: new Date(c.created_at),
     createdBy: c.created_by,
   };
@@ -322,6 +336,7 @@ export async function unassign(taskId: string): Promise<Task> {
     timeSpentInMinutes: c.time_spent,
     status: c.status as TaskStatus,
     epicId: c.epic_id,
+    assignedTo: c.assigned_to,
     createdAt: new Date(c.created_at),
     createdBy: c.created_by,
   };

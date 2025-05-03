@@ -29,7 +29,8 @@ export default function mcpEpicHandlers(server: McpServer) {
       ResourceActions.Read,
       ResourceNames.Epic,
       async (body, user) => {
-        const epics = await service.list(user.id);
+        const userId = user.role === "Developer" ? user.id : undefined;
+        const epics = await service.list(userId);
         return {
           content: epics.map((epic) => ({
             type: "text",
@@ -71,7 +72,8 @@ export default function mcpEpicHandlers(server: McpServer) {
       ResourceActions.Read,
       ResourceNames.Epic,
       async (body, user) => {
-        const stats = await service.statistics();
+        const userId = user.role === "Developer" ? user.id : undefined;
+        const stats = await service.statistics(userId);
         return {
           content: [
             {

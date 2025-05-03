@@ -10,12 +10,18 @@ import * as service from "./service";
 const app = new Hono<{ Variables: CustomJwtVariables }>();
 
 app.get("/statistics/users", async (c) => {
-  const stats = await service.statisticsByUser();
+  const jwt = c.get("jwtPayload");
+  const userId = jwt.role === "Developer" ? jwt.sub : undefined;
+
+  const stats = await service.statisticsByUser(userId);
   return c.json(stats);
 });
 
 app.get("/statistics/tasks", async (c) => {
-  const stats = await service.statisticsByTask();
+  const jwt = c.get("jwtPayload");
+  const userId = jwt.role === "Developer" ? jwt.sub : undefined;
+
+  const stats = await service.statisticsByTask(userId);
   return c.json(stats);
 });
 
