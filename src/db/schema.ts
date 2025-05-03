@@ -15,7 +15,10 @@ export const sessionsTable = sqliteTable("sessions", {
   code: text().notNull(),
   user_id: text()
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
   created_at: text().notNull(),
 });
 
@@ -37,7 +40,10 @@ export const tasksTable = sqliteTable("tasks", {
   epic_id: text()
     .notNull()
     .references(() => epicsTable.id),
-  assigned_to: text().references(() => usersTable.id),
+  assigned_to: text().references(() => usersTable.id, {
+    onDelete: "set null",
+    onUpdate: "cascade",
+  }),
   created_at: text().notNull(),
   created_by: text()
     .notNull()
@@ -49,9 +55,15 @@ export const commentsTable = sqliteTable("comments", {
   content: text().notNull(),
   task_id: text()
     .notNull()
-    .references(() => tasksTable.id),
+    .references(() => tasksTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
   created_at: text().notNull(),
   created_by: text()
     .notNull()
-    .references(() => usersTable.id),
+    .references(() => usersTable.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
 });
