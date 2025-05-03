@@ -15,8 +15,7 @@ import {
 import {
   permit,
   getConfig,
-  getResourceFromReq,
-  sentenceCase,
+  getResourceActionFromReq,
   HttpStatus,
 } from "./utils";
 
@@ -48,8 +47,11 @@ server.use(
       return c.notFound();
     }
 
-    const resource = sentenceCase(path[2].slice(0, -1));
-    const action = getResourceFromReq(c.req.method, c.req.path);
+    const { resource, action } = getResourceActionFromReq(
+      c.req.method,
+      c.req.path,
+      jwtPayload.role !== "Admin",
+    );
 
     const permitted = await permit.check(jwtPayload.sub, action, resource);
     if (!permitted) {

@@ -1,3 +1,5 @@
+import { sentenceCase } from "./strings";
+
 export const MimeTypeJson = "application/json";
 
 export type UserRole = "Admin" | "Manager" | "Developer";
@@ -10,9 +12,9 @@ export type ResourceAction =
   | "update"
   | "delete"
   | "assign"
-  | "unassigned"
+  | "unassign"
   | "log-work"
-  | "reject";
+  | "";
 
 export enum ResourceNames {
   Epic = "Epic",
@@ -47,29 +49,50 @@ export enum HttpStatus {
   InternalServerError = 500,
 }
 
-const taskResources = ["assign", "unassigned", "log-work"] as const;
-export function getResourceFromReq(
+const taskActions = ["log-work", "unassign", "assign"] as const;
+export function getResourceActionFromReq(
   method: string,
   path: string,
-): ResourceAction {
-  for (const res of taskResources) {
-    if (path.includes(res)) {
-      return res;
+  includeResourceInstance: boolean,
+): { resource: string; action: ResourceAction } {
+  const getAction = () => {
+    for (const res of taskActions) {
+      if (path.includes(res)) {
+        return res;
+      }
     }
-  }
 
-  switch (method.toUpperCase()) {
-    case "POST":
-      return "create";
-    case "PUT":
-      return "update";
-    case "GET":
-      return "read";
-    case "DELETE":
-      return "delete";
-    default:
-      return "reject";
-  }
+    switch (method.toUpperCase()) {
+      case "POST":
+        return "create";
+      case "PUT":
+        return "update";
+      case "GET":
+        return "read";
+      case "DELETE":
+        return "delete";
+      default:
+        return "";
+    }
+  };
+
+  const getResource = () => {
+    const pathParts = path.split("/");
+    const resourceInstanceMatch = path.match(/[0-7][0-9A-HJKMNP-TV-Z]{25}/gm);
+
+    const resourceName = sentenceCase(pathParts[2].slice(0, -1));
+    let resourceInstance = "";
+    if (includeResourceInstance) {
+      resourceInstance =
+        resourceInstanceMatch && resourceInstanceMatch.length > 0
+          ? `:${resourceInstanceMatch[0]}`
+          : "";
+    }
+
+    return `${resourceName}${resourceInstance}`;
+  };
+
+  return { resource: getResource(), action: getAction() };
 }
 
 export function getDeleteMessage(success: boolean, resource: string): string {
