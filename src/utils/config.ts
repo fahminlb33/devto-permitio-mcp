@@ -15,6 +15,7 @@ const ConfigSchema = z.object({
     algorithm: z.enum(["HS256", "HS512"]).default("HS256"),
   }),
   webhookUrl: z.string().url(),
+  debugging: z.boolean().default(false),
 });
 
 export function getConfig(): z.infer<typeof ConfigSchema> {
@@ -32,5 +33,6 @@ export function getConfig(): z.infer<typeof ConfigSchema> {
       algorithm: process.env.JWT_ALGORITHM,
     },
     webhookUrl: process.env.WEBHOOK_URL,
+    debugging: !!process.env.DEBUGGING,
   });
 }
