@@ -40,7 +40,6 @@
     "@biomejs/biome": "1.9.4",
     "@faker-js/faker": "^9.7.0",
     "@modelcontextprotocol/inspector": "^0.10.2",
-    "@permitio/cli": "^0.2.5",
     "@types/node": "^22.15.2",
     "drizzle-kit": "^0.31.0",
     "esbuild": "^0.25.3",
