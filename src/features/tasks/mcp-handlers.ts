@@ -1,24 +1,15 @@
 import { z } from "zod";
-import {
-  type McpServer,
-  ResourceTemplate,
-} from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { getDeleteMessage, MimeTypeJson } from "~/utils";
-import { authorizeTool, parseAndAuthorizeResource } from "~/features/common";
+import {
+  getDeleteMessage,
+  MimeTypeJson,
+  ResourceActions,
+  ResourceNames,
+} from "~/utils";
+import { authorizeTool } from "~/features/common";
 
 import * as service from "./service";
-
-const ResourceName = "tasks";
-
-enum Actions {
-  Create = "create",
-  Update = "update",
-  Delete = "delete",
-  Assign = "assign",
-  Unassign = "unassign",
-  LogWork = "log-work",
-}
 
 enum Descriptions {
   List = "List available tasks.",
@@ -34,23 +25,19 @@ enum Descriptions {
 }
 
 export default function mcpTaskHandlers(server: McpServer) {
-  server.resource(
+  server.tool(
     "list-tasks",
-    new ResourceTemplate(`${ResourceName}://{sessionCode}`, {
-      list: undefined,
-    }),
-    {
-      name: "List tasks",
-      description: Descriptions.List,
-    },
-    parseAndAuthorizeResource(
-      z.object({ sessionCode: z.string() }),
-      async (uri, data, user) => {
+    Descriptions.List,
+    { sessionCode: z.string(), epicId: z.string().ulid() },
+    authorizeTool(
+      ResourceActions.Read,
+      ResourceNames.Task,
+      async (body, user) => {
         const userId = user.role === "Developer" ? user.id : undefined;
         const users = await service.list(userId);
         return {
-          contents: users.map((u) => ({
-            uri: `${ResourceName}://{sessionCode}/${u.taskId}`,
+          content: users.map((u) => ({
+            type: "text",
             mimeType: MimeTypeJson,
             text: JSON.stringify(u),
           })),
@@ -59,22 +46,18 @@ export default function mcpTaskHandlers(server: McpServer) {
     ),
   );
 
-  server.resource(
-    "tasks-statistics-by-user",
-    new ResourceTemplate(`${ResourceName}://{sessionCode}/statistics/by-user`, {
-      list: undefined,
-    }),
-    {
-      name: "Get task statistics grouped by user",
-      description: Descriptions.StatisticsByUser,
-    },
-    parseAndAuthorizeResource(
-      z.object({ sessionCode: z.string() }),
-      async (uri, data, user) => {
+  server.tool(
+    "task-statistics-by-user",
+    Descriptions.StatisticsByUser,
+    { sessionCode: z.string(), epicId: z.string().ulid() },
+    authorizeTool(
+      ResourceActions.Read,
+      ResourceNames.Task,
+      async (body, user) => {
         const stats = await service.statisticsByUser();
         return {
-          contents: stats.map((u) => ({
-            uri: `${ResourceName}://{sessionCode}/statistics/by-user`,
+          content: stats.map((u) => ({
+            type: "text",
             mimeType: MimeTypeJson,
             text: JSON.stringify(u),
           })),
@@ -83,22 +66,18 @@ export default function mcpTaskHandlers(server: McpServer) {
     ),
   );
 
-  server.resource(
-    "tasks-statistics-by-task",
-    new ResourceTemplate(`${ResourceName}://{sessionCode}/statistics/by-task`, {
-      list: undefined,
-    }),
-    {
-      name: "Get task statistics grouped by user",
-      description: Descriptions.StatisticsByTask,
-    },
-    parseAndAuthorizeResource(
-      z.object({ sessionCode: z.string() }),
-      async (uri, data, user) => {
+  server.tool(
+    "task-statistics-by-task",
+    Descriptions.StatisticsByTask,
+    { sessionCode: z.string(), epicId: z.string().ulid() },
+    authorizeTool(
+      ResourceActions.Read,
+      ResourceNames.Task,
+      async (body, user) => {
         const stats = await service.statisticsByTask();
         return {
-          contents: stats.map((u) => ({
-            uri: `${ResourceName}://{sessionCode}/statistics/by-task`,
+          content: stats.map((u) => ({
+            type: "text",
             mimeType: MimeTypeJson,
             text: JSON.stringify(u),
           })),
@@ -107,24 +86,20 @@ export default function mcpTaskHandlers(server: McpServer) {
     ),
   );
 
-  server.resource(
+  server.tool(
     "task-detail",
-    new ResourceTemplate(`${ResourceName}://{sessionCode}/{taskId}`, {
-      list: undefined,
-    }),
-    {
-      name: "Get task detail",
-      description: Descriptions.Detail,
-    },
-    parseAndAuthorizeResource(
-      z.object({ sessionCode: z.string(), taskId: z.string().ulid() }),
-      async (uri, data, user) => {
-        const task = await service.get(data.taskId);
+    Descriptions.Detail,
+    { sessionCode: z.string(), epicId: z.string().ulid() },
+    authorizeTool(
+      ResourceActions.Read,
+      ResourceNames.Task,
+      async (body, user) => {
+        const task = await service.get(body.taskId);
         if (!task) {
           return {
-            contents: [
+            content: [
               {
-                uri: uri.href,
+                type: "text",
                 text: "Task not found",
               },
             ],
@@ -132,9 +107,9 @@ export default function mcpTaskHandlers(server: McpServer) {
         }
 
         return {
-          contents: [
+          content: [
             {
-              uri: uri.href,
+              type: "text",
               mimeType: MimeTypeJson,
               text: JSON.stringify(task),
             },
@@ -153,37 +128,41 @@ export default function mcpTaskHandlers(server: McpServer) {
       title: z.string(),
       description: z.string(),
     },
-    authorizeTool(Actions.Update, ResourceName, async (body, user) => {
-      const isExists = await service.isEpicExists(body.epicId);
-      if (!isExists) {
+    authorizeTool(
+      ResourceActions.Update,
+      ResourceNames.Task,
+      async (body, user) => {
+        const isExists = await service.isEpicExists(body.epicId);
+        if (!isExists) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "Epic not found",
+              },
+            ],
+          };
+        }
+
+        const result = await service.create({
+          title: body.title,
+          description: body.description,
+          epicId: body.epicId,
+          userId: user.id,
+          userRole: user.role,
+        });
+
         return {
           content: [
             {
               type: "text",
-              text: "Epic not found",
+              mimeType: MimeTypeJson,
+              text: JSON.stringify(result),
             },
           ],
         };
-      }
-
-      const result = await service.create({
-        title: body.title,
-        description: body.description,
-        epicId: body.epicId,
-        userId: user.id,
-        userRole: user.role,
-      });
-
-      return {
-        content: [
-          {
-            type: "text",
-            mimeType: MimeTypeJson,
-            text: JSON.stringify(result),
-          },
-        ],
-      };
-    }),
+      },
+    ),
   );
 
   server.tool(
@@ -195,64 +174,72 @@ export default function mcpTaskHandlers(server: McpServer) {
       title: z.string(),
       description: z.string(),
     },
-    authorizeTool(Actions.Update, ResourceName, async (body, user) => {
-      const isExists = await service.isExists(body.commentId);
-      if (!isExists) {
+    authorizeTool(
+      ResourceActions.Update,
+      ResourceNames.Task,
+      async (body, user) => {
+        const isExists = await service.isExists(body.commentId);
+        if (!isExists) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "Task not found",
+              },
+            ],
+          };
+        }
+
+        const result = await service.update(
+          body.taskId,
+          body.title,
+          body.description,
+        );
+
         return {
           content: [
             {
               type: "text",
-              text: "Task not found",
+              mimeType: MimeTypeJson,
+              text: JSON.stringify(result),
             },
           ],
         };
-      }
-
-      const result = await service.update(
-        body.taskId,
-        body.title,
-        body.description,
-      );
-
-      return {
-        content: [
-          {
-            type: "text",
-            mimeType: MimeTypeJson,
-            text: JSON.stringify(result),
-          },
-        ],
-      };
-    }),
+      },
+    ),
   );
 
   server.tool(
     "delete-task",
     Descriptions.Delete,
     { sessionCode: z.string(), epicId: z.string().ulid() },
-    authorizeTool(Actions.Delete, ResourceName, async (body, user) => {
-      const isExists = await service.isExists(body.commentId);
-      if (!isExists) {
+    authorizeTool(
+      ResourceActions.Delete,
+      ResourceNames.Task,
+      async (body, user) => {
+        const isExists = await service.isExists(body.commentId);
+        if (!isExists) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "Task not found",
+              },
+            ],
+          };
+        }
+
+        const success = await service.remove(body.epicId);
         return {
           content: [
             {
               type: "text",
-              text: "Task not found",
+              text: getDeleteMessage(success, "task"),
             },
           ],
         };
-      }
-
-      const success = await service.remove(body.epicId);
-      return {
-        content: [
-          {
-            type: "text",
-            text: getDeleteMessage(success, "task"),
-          },
-        ],
-      };
-    }),
+      },
+    ),
   );
 
   server.tool(
@@ -263,60 +250,68 @@ export default function mcpTaskHandlers(server: McpServer) {
       taskId: z.string().ulid(),
       userId: z.string().ulid(),
     },
-    authorizeTool(Actions.Assign, ResourceName, async (body, user) => {
-      const isExists = await service.isExists(body.commentId);
-      if (!isExists) {
+    authorizeTool(
+      ResourceActions.Assign,
+      ResourceNames.Task,
+      async (body, user) => {
+        const isExists = await service.isExists(body.commentId);
+        if (!isExists) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "Task not found",
+              },
+            ],
+          };
+        }
+
+        const result = await service.assign(body.taskId, body.userId);
         return {
           content: [
             {
               type: "text",
-              text: "Task not found",
+              mimeType: MimeTypeJson,
+              text: JSON.stringify(result),
             },
           ],
         };
-      }
-
-      const result = await service.assign(body.taskId, body.userId);
-      return {
-        content: [
-          {
-            type: "text",
-            mimeType: MimeTypeJson,
-            text: JSON.stringify(result),
-          },
-        ],
-      };
-    }),
+      },
+    ),
   );
 
   server.tool(
     "unassign-task",
     Descriptions.Unassign,
     { sessionCode: z.string(), taskId: z.string().ulid() },
-    authorizeTool(Actions.Assign, ResourceName, async (body, user) => {
-      const isExists = await service.isExists(body.commentId);
-      if (!isExists) {
+    authorizeTool(
+      ResourceActions.Unassign,
+      ResourceNames.Task,
+      async (body, user) => {
+        const isExists = await service.isExists(body.commentId);
+        if (!isExists) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "Task not found",
+              },
+            ],
+          };
+        }
+
+        const result = await service.unassign(body.taskId);
         return {
           content: [
             {
               type: "text",
-              text: "Task not found",
+              mimeType: MimeTypeJson,
+              text: JSON.stringify(result),
             },
           ],
         };
-      }
-
-      const result = await service.unassign(body.taskId);
-      return {
-        content: [
-          {
-            type: "text",
-            mimeType: MimeTypeJson,
-            text: JSON.stringify(result),
-          },
-        ],
-      };
-    }),
+      },
+    ),
   );
 
   server.tool(
@@ -328,34 +323,38 @@ export default function mcpTaskHandlers(server: McpServer) {
       status: z.enum(["TODO", "IN_PROGRESS", "DONE"]),
       incrementTimeSpentInMinutes: z.number().min(0),
     },
-    authorizeTool(Actions.Assign, ResourceName, async (body, user) => {
-      const isExists = await service.isExists(body.commentId);
-      if (!isExists) {
+    authorizeTool(
+      ResourceActions.LogWork,
+      ResourceNames.Task,
+      async (body, user) => {
+        const isExists = await service.isExists(body.commentId);
+        if (!isExists) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: "Task not found",
+              },
+            ],
+          };
+        }
+
+        const result = await service.logWork(
+          body.taskId,
+          body.status,
+          body.incrementTimeSpentInMinutes,
+        );
+
         return {
           content: [
             {
               type: "text",
-              text: "Task not found",
+              mimeType: MimeTypeJson,
+              text: JSON.stringify(result),
             },
           ],
         };
-      }
-
-      const result = await service.logWork(
-        body.taskId,
-        body.status,
-        body.incrementTimeSpentInMinutes,
-      );
-
-      return {
-        content: [
-          {
-            type: "text",
-            mimeType: MimeTypeJson,
-            text: JSON.stringify(result),
-          },
-        ],
-      };
-    }),
+      },
+    ),
   );
 }

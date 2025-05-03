@@ -6,17 +6,18 @@ export type UserRole = "Admin" | "Manager" | "Developer";
 
 export type TaskStatus = "TODO" | "IN_PROGRESS" | "DONE";
 
-export type ResourceAction =
-  | "create"
-  | "read"
-  | "update"
-  | "delete"
-  | "assign"
-  | "unassign"
-  | "log-work"
-  | "";
+export enum ResourceActions {
+  Create = "create",
+  Read = "read",
+  Update = "update",
+  Delete = "delete",
+  Assign = "assign",
+  Unassign = "unassign",
+  LogWork = "log-work",
+}
 
 export enum ResourceNames {
+  User = "User",
   Epic = "Epic",
   Task = "Task",
   Comment = "Comment",
@@ -54,7 +55,7 @@ export function getResourceActionFromReq(
   method: string,
   path: string,
   includeResourceInstance: boolean,
-): { resource: string; action: ResourceAction } {
+): { resource: string; action: string } {
   const getAction = () => {
     for (const res of taskActions) {
       if (path.includes(res)) {

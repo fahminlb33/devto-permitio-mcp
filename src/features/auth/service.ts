@@ -54,7 +54,7 @@ export async function loginWithSessionCode(email: string): Promise<boolean> {
   }
 
   const user = rows[0];
-  const token = Math.floor(100000 + Math.random() * 900000).toString();
+  const token = `SES-${Math.floor(100000 + Math.random() * 900000).toString()}`;
   await db.insert(sessionsTable).values({
     id: ulid(),
     code: token,

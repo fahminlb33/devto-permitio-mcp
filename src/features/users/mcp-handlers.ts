@@ -1,35 +1,36 @@
 import { z } from "zod";
-import {
-  type McpServer,
-  ResourceTemplate,
-} from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-import { sprintf, MessageConstants, MimeTypeJson } from "~/utils";
-import { parseAndAuthorizeResource } from "~/features/common";
+import {
+  sprintf,
+  MessageConstants,
+  MimeTypeJson,
+  ResourceActions,
+  ResourceNames,
+} from "~/utils";
+import { authorizeTool } from "~/features/common";
 
 import * as service from "./service";
 
 enum Descriptions {
   List = "List all registered user in the system, returning the user profile information.",
   MyProfile = "Get a detailed profile of the user based on its session code, the data includes the user's email, name, and role.",
-  GetProfile = "Get a detailed profile of the used based on the provided email.",
+  UserProfile = "Get a detailed profile of the used based on the provided email.",
 }
 
 export default function mcpUserHandlers(server: McpServer) {
-  server.resource(
+  server.tool(
     "list-users",
-    new ResourceTemplate("users://{sessionCode}", { list: undefined }),
-    {
-      name: "List users",
-      description: Descriptions.List,
-    },
-    parseAndAuthorizeResource(
-      z.object({ sessionCode: z.string() }),
-      async (uri, data, user) => {
+    Descriptions.List,
+    { sessionCode: z.string() },
+    authorizeTool(
+      ResourceActions.Read,
+      ResourceNames.User,
+      async (body, user) => {
         const users = await service.list();
         return {
-          contents: users.map((user) => ({
-            uri: `users://{sessionCode}/${user.email}/profile`,
+          content: users.map((user) => ({
+            type: "text",
             mimeType: MimeTypeJson,
             text: JSON.stringify(user),
           })),
@@ -38,27 +39,23 @@ export default function mcpUserHandlers(server: McpServer) {
     ),
   );
 
-  server.resource(
+  server.tool(
     "my-profile",
-    new ResourceTemplate("users://{sessionCode}/profile", {
-      list: undefined,
-    }),
-    {
-      name: "Get current user profile",
-      description: Descriptions.MyProfile,
-    },
-    parseAndAuthorizeResource(
-      z.object({ sessionCode: z.string() }),
-      async (uri, data, user) => {
+    Descriptions.MyProfile,
+    { sessionCode: z.string() },
+    authorizeTool(
+      ResourceActions.Read,
+      ResourceNames.User,
+      async (body, user) => {
         const profile = await service.get({
           type: "id",
           value: user.id,
         });
         if (!user) {
           return {
-            contents: [
+            content: [
               {
-                uri: uri.href,
+                type: "text",
                 text: MessageConstants.InvalidSession,
               },
             ],
@@ -66,9 +63,9 @@ export default function mcpUserHandlers(server: McpServer) {
         }
 
         return {
-          contents: [
+          content: [
             {
-              uri: uri.href,
+              type: "text",
               mimeType: MimeTypeJson,
               text: JSON.stringify(profile),
             },
@@ -78,37 +75,33 @@ export default function mcpUserHandlers(server: McpServer) {
     ),
   );
 
-  server.resource(
+  server.tool(
     "user-profile",
-    new ResourceTemplate("users://{sessionCode}/{email}", {
-      list: undefined,
-    }),
-    {
-      name: "Get user profile for the specified email",
-      description: Descriptions.GetProfile,
-    },
-    parseAndAuthorizeResource(
-      z.object({ sessionCode: z.string(), email: z.string().email() }),
-      async (uri, data, user) => {
+    Descriptions.UserProfile,
+    { sessionCode: z.string(), email: z.string().email() },
+    authorizeTool(
+      ResourceActions.Read,
+      ResourceNames.User,
+      async (body, user) => {
         const profile = await service.get({
           type: "email",
-          value: data.email,
+          value: body.email,
         });
         if (!user) {
           return {
-            contents: [
+            content: [
               {
-                uri: uri.href,
-                text: sprintf(MessageConstants.UserNotFound, data.email),
+                type: "text",
+                text: sprintf(MessageConstants.UserNotFound, body.email),
               },
             ],
           };
         }
 
         return {
-          contents: [
+          content: [
             {
-              uri: uri.href,
+              type: "text",
               mimeType: MimeTypeJson,
               text: JSON.stringify(profile),
             },
