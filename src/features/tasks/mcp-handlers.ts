@@ -21,16 +21,16 @@ enum Actions {
 }
 
 enum Descriptions {
-  List = "List ",
-  StatisticsByUser = "",
-  StatisticsByTask = "",
-  Detail = "",
-  Create = "",
-  Update = "",
-  Delete = "Delete ",
-  Assign = "Assign",
-  Unassign = "",
-  LogWork = "",
+  List = "List available tasks.",
+  StatisticsByUser = "Count the number of tasks per user.",
+  StatisticsByTask = "Count the number of comments per task",
+  Detail = "Get a detailed info of a specific task.",
+  Create = "Create new task for a specific epic.",
+  Update = "Updates task title and content.",
+  Delete = "Delete the specified task.",
+  Assign = "Assign task to a user. Only manager and admin can assign task to users.",
+  Unassign = "Unassign user from a specific task. Only manager and admin can unassign task to users.",
+  LogWork = "Update task status and optionally increase the time spent for a specified task.",
 }
 
 export default function mcpTaskHandlers(server: McpServer) {

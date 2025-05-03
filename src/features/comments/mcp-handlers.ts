@@ -18,10 +18,10 @@ enum Actions {
 }
 
 enum Descriptions {
-  List = "List ",
-  Create = "",
-  Update = "",
-  Delete = "Delete ",
+  List = "List comments for a specific task.",
+  Create = "Create new comment for specific task.",
+  Update = "Update existing comment content.",
+  Delete = "Delete comment from a task.",
 }
 
 export default function mcpCommentHandlers(server: McpServer) {

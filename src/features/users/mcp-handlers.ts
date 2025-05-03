@@ -12,7 +12,7 @@ import * as service from "./service";
 enum Descriptions {
   List = "List all registered user in the system, returning the user profile information.",
   MyProfile = "Get a detailed profile of the user based on its session code, the data includes the user's email, name, and role.",
-  GetProfile = "Get a detailed profile of the used based on the provided email",
+  GetProfile = "Get a detailed profile of the used based on the provided email.",
 }
 
 export default function mcpUserHandlers(server: McpServer) {

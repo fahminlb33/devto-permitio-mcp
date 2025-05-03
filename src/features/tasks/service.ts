@@ -10,7 +10,7 @@ export type Task = {
   taskId: string;
   title: string;
   description: string;
-  timeSpent: number;
+  timeSpentInMinutes: number;
   status: TaskStatus;
   epicId: string;
   createdAt: Date;
@@ -52,7 +52,7 @@ export async function get(
     taskId: c.id,
     title: c.title,
     description: c.description,
-    timeSpent: c.time_spent,
+    timeSpentInMinutes: c.time_spent,
     status: c.status as TaskStatus,
     commentsCount: commentsCount,
     epicId: c.epic_id,
@@ -81,7 +81,7 @@ export async function list(epicId?: string, userId?: string) {
     taskId: x.id,
     title: x.title,
     description: x.description,
-    timeSpent: x.time_spent,
+    timeSpentInMinutes: x.time_spent,
     status: x.status,
     epicId: x.epic_id,
     createdAt: new Date(x.created_at),
@@ -201,7 +201,7 @@ export async function create(data: {
     taskId: c.id,
     title: c.title,
     description: c.description,
-    timeSpent: c.time_spent,
+    timeSpentInMinutes: c.time_spent,
     status: c.status as TaskStatus,
     epicId: c.epic_id,
     createdAt: new Date(c.created_at),
@@ -228,7 +228,7 @@ export async function update(
     taskId: c.id,
     title: c.title,
     description: c.description,
-    timeSpent: c.time_spent,
+    timeSpentInMinutes: c.time_spent,
     status: c.status as TaskStatus,
     epicId: c.epic_id,
     createdAt: c.created_at,
@@ -282,7 +282,7 @@ export async function assign(taskId: string, userId: string): Promise<Task> {
     taskId: c.id,
     title: c.title,
     description: c.description,
-    timeSpent: c.time_spent,
+    timeSpentInMinutes: c.time_spent,
     status: c.status as TaskStatus,
     epicId: c.epic_id,
     createdAt: new Date(c.created_at),
@@ -319,7 +319,7 @@ export async function unassign(taskId: string): Promise<Task> {
     taskId: c.id,
     title: c.title,
     description: c.description,
-    timeSpent: c.time_spent,
+    timeSpentInMinutes: c.time_spent,
     status: c.status as TaskStatus,
     epicId: c.epic_id,
     createdAt: new Date(c.created_at),
@@ -330,13 +330,13 @@ export async function unassign(taskId: string): Promise<Task> {
 export async function logWork(
   taskId: string,
   status: TaskStatus,
-  incTimeSpent: number,
+  incTimeSpentInMinutes: number,
 ) {
   const row = await db
     .update(tasksTable)
     .set({
       status: status,
-      time_spent: sql`${tasksTable.time_spent} + ${incTimeSpent}`,
+      time_spent: sql`${tasksTable.time_spent} + ${incTimeSpentInMinutes}`,
     })
     .where(eq(tasksTable.id, taskId))
     .returning();
@@ -353,7 +353,7 @@ export async function logWork(
     taskId: c.id,
     title: c.title,
     description: c.description,
-    timeSpent: c.time_spent,
+    timeSpentInMinutes: c.time_spent,
     status: c.status as TaskStatus,
     epicId: c.epic_id,
     createdAt: c.created_at,
