@@ -1,0 +1,21 @@
+{
+    "mcpServers": {
+        "miniKanban": {
+            "command": "docker",
+            "args": [
+                "run",
+                "-i",
+                "--rm",
+                "--env-file",
+                "D:\\devto-permitio-mcp\\docker.env",
+                "-v",
+                "D:\\devto-permitio-mcp:/data",
+                "--name",
+                "devto-permitio-mcp",
+                "devto-permitio-todo:latest",
+                "node",
+                "dist/app.mcp.js"
+            ]
+        }
+    }
+}

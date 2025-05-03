@@ -137,3 +137,6 @@ dist
 
 # Local SQLite database
 *.db
+
+# Env
+docker.env
