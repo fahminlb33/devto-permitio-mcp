@@ -7,16 +7,16 @@
         "-i",
         "--rm",
         "--env-file",
-        "D:\\devto-permitio-mcp\\docker.env",
+        "D:/devto-permitio-mcp/docker.env",
         "-v",
-        "D:\\devto-permitio-mcp:/data",
+        "D:/devto-permitio-mcp/local.db:/app/local.db:rw",
         "--net",
         "devto-permitio-mcp",
         "--name",
         "devto-permitio-mcp",
-        "devto-permitio-todo:latest",
+        "devto-permitio-mcp:latest",
         "node",
-        "dist/app.mcp.js"
+        "app.mcp.js"
       ]
     }
   }

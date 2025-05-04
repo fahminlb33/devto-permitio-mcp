@@ -15,15 +15,13 @@ RUN npm run build
 # Runtime image
 FROM base AS runtime
 
-ARG APP="hono"
+ARG APP="mcp"
 ENV NODE_ENV=production
 WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm ci
 
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/dist ./
 
-USER 1000
-
-CMD [ "node", "dist/app.${APP}.js" ]
+CMD [ "node", "app.${APP}.js" ]
