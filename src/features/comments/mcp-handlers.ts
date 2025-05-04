@@ -30,7 +30,7 @@ export default function mcpCommentHandlers(server: McpServer) {
       ResourceActions.Read,
       ResourceNames.Comment,
       async (body, user) => {
-        const comments = await service.list(user.id);
+        const comments = await service.list(body.taskId);
         return {
           content: comments.map((c) => ({
             type: "text",
@@ -127,7 +127,7 @@ export default function mcpCommentHandlers(server: McpServer) {
   server.tool(
     "delete-comment",
     Descriptions.Delete,
-    { sessionCode: z.string(), epicId: z.string().ulid() },
+    { sessionCode: z.string(), commentId: z.string().ulid() },
     authorizeTool(
       ResourceActions.Delete,
       ResourceNames.Comment,
@@ -144,7 +144,7 @@ export default function mcpCommentHandlers(server: McpServer) {
           };
         }
 
-        const success = await service.remove(body.epicId);
+        const success = await service.remove(body.commentId);
         return {
           content: [
             {

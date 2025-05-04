@@ -67,7 +67,7 @@ export default function mcpEpicHandlers(server: McpServer) {
   server.tool(
     "epic-statistics",
     Descriptions.Statistics,
-    { sessionCode: z.string(), epicId: z.string().ulid() },
+    { sessionCode: z.string() },
     authorizeTool(
       ResourceActions.Read,
       ResourceNames.Epic,

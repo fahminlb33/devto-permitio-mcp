@@ -13,6 +13,7 @@ import * as service from "./service";
 
 enum Descriptions {
   List = "List available tasks.",
+  ListByEpic = "List available tasks filtered by epic.",
   StatisticsByUser = "Count the number of tasks per user.",
   StatisticsByTask = "Count the number of comments per task",
   Detail = "Get a detailed info of a specific task.",
@@ -28,13 +29,34 @@ export default function mcpTaskHandlers(server: McpServer) {
   server.tool(
     "list-tasks",
     Descriptions.List,
+    { sessionCode: z.string() },
+    authorizeTool(
+      ResourceActions.Read,
+      ResourceNames.Task,
+      async (body, user) => {
+        const userId = user.role === "Developer" ? user.id : undefined;
+        const users = await service.list(undefined, userId);
+        return {
+          content: users.map((u) => ({
+            type: "text",
+            mimeType: MimeTypeJson,
+            text: JSON.stringify(u),
+          })),
+        };
+      },
+    ),
+  );
+
+  server.tool(
+    "list-tasks-by-epic",
+    Descriptions.ListByEpic,
     { sessionCode: z.string(), epicId: z.string().ulid() },
     authorizeTool(
       ResourceActions.Read,
       ResourceNames.Task,
       async (body, user) => {
         const userId = user.role === "Developer" ? user.id : undefined;
-        const users = await service.list(userId);
+        const users = await service.list(body.epicId, userId);
         return {
           content: users.map((u) => ({
             type: "text",
@@ -49,7 +71,7 @@ export default function mcpTaskHandlers(server: McpServer) {
   server.tool(
     "task-statistics-by-user",
     Descriptions.StatisticsByUser,
-    { sessionCode: z.string(), epicId: z.string().ulid() },
+    { sessionCode: z.string() },
     authorizeTool(
       ResourceActions.Read,
       ResourceNames.Task,
@@ -70,7 +92,7 @@ export default function mcpTaskHandlers(server: McpServer) {
   server.tool(
     "task-statistics-by-task",
     Descriptions.StatisticsByTask,
-    { sessionCode: z.string(), epicId: z.string().ulid() },
+    { sessionCode: z.string() },
     authorizeTool(
       ResourceActions.Read,
       ResourceNames.Task,
@@ -91,7 +113,7 @@ export default function mcpTaskHandlers(server: McpServer) {
   server.tool(
     "task-detail",
     Descriptions.Detail,
-    { sessionCode: z.string(), epicId: z.string().ulid() },
+    { sessionCode: z.string(), taskId: z.string().ulid() },
     authorizeTool(
       ResourceActions.Read,
       ResourceNames.Task,
