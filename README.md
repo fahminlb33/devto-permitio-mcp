@@ -6,11 +6,11 @@ The key point of this project is this repo contains two APIs, (1) a classic REST
 
 ### Permit.io Allowed for Easy Authorization
 
-**REST API with Hono:**
+#### REST API with Hono
 
 In traditional web API, implementing Permit.io authorization as a middleware simplifed and also centralized the authorization process, no more messy authorization check on every endpoints.
 
-**MCP Server**
+#### MCP Server
 
 The same authorization technique in the web API can easily be reused in MCP server (with some changes). With Permit.io, the authorization process is "framework-agnostic" so I can effectively implement the authorization process with any framework easily.
 
@@ -23,8 +23,9 @@ Follow these steps:
 1. Clone this repo `git clone https://github.com/fahminlb33/devto-permitio-mcp.git`
 2. Install packages `npm install`
 3. Perform database migration `npm db:migrate`
-4. Seed the database `npm db:seed`
+4. Seed the database `npm db:seed`, you will get user the credentials here. The password is "2025DEVChallenge"
 5. Copy the `.env.example` into `.env`, fill out the env with your Permit.io environment key!
+6. Sync the database with Permit.io `npm run permit:sync`
 
 Now you're ready to run the local PDP server before starting the Hono REST API and MCP server.
 
