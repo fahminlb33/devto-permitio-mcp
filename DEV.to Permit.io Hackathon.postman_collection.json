@@ -1,0 +1,1996 @@
+{
+	"info": {
+		"_postman_id": "b6605f4a-7c27-4a58-82a3-9a49c53c7788",
+		"name": "DEV.to Permit.io Hackathon",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12403962"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const data = pm.response.json();\r",
+									"pm.environment.set(\"ACCESS_TOKEN\", data.accessToken);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"LEONORA.HAND86@GMAIL.COM\",\r\n    \"password\": \"2025DEVChallenge\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/public/auth/login",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"public",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"MAURINE_FARRELL@YAHOO.COM\",\r\n    \"password\": \"2025DEVChallenge\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URI}}/public/auth/login",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"public",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "282"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 May 2025 23:56:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userId\": \"01JT5B3JTME9ZQHC1T3WARBWKW\",\n    \"userName\": \"MAURINE_FARRELL@YAHOO.COM\",\n    \"role\": \"Admin\",\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYyMzM4MDQsInN1YiI6IjAxSlQ1QjNKVE1FOVpRSEMxVDNXQVJCV0tXIiwicm9sZSI6IkFkbWluIn0.MNiTdcJD8RGcy7iFzWGRrEiqV0lRFDQ7esQaB385wsU\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "My Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/users/profile",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"users",
+								"profile"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/users/profile",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"users",
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "172"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 May 2025 23:58:51 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userId\": \"01JT5B3JTME9ZQHC1T3WARBWKW\",\n    \"email\": \"MAURINE_FARRELL@YAHOO.COM\",\n    \"firstName\": \"Maurine\",\n    \"lastName\": \"Farrell\",\n    \"role\": \"Admin\",\n    \"createdAt\": \"2025-05-01T07:13:49.908Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "List Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/users",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/users",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "1045"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 May 2025 23:59:23 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"userId\": \"01JT5B3JTME9ZQHC1T3WARBWKW\",\n        \"email\": \"MAURINE_FARRELL@YAHOO.COM\",\n        \"firstName\": \"Maurine\",\n        \"lastName\": \"Farrell\",\n        \"role\": \"Admin\",\n        \"createdAt\": \"2025-05-01T07:13:49.908Z\"\n    },\n    {\n        \"userId\": \"01JT5B3JTNYRJJHFBWFEPM61MK\",\n        \"email\": \"MARLEN_HUEL43@YAHOO.COM\",\n        \"firstName\": \"Marlen\",\n        \"lastName\": \"Huel\",\n        \"role\": \"Manager\",\n        \"createdAt\": \"2025-05-01T07:13:49.909Z\"\n    },\n    {\n        \"userId\": \"01JT5B3JTN1V2VECJWRTBJCMFG\",\n        \"email\": \"GRANVILLE_DECKOW@GMAIL.COM\",\n        \"firstName\": \"Granville\",\n        \"lastName\": \"Deckow\",\n        \"role\": \"Manager\",\n        \"createdAt\": \"2025-05-01T07:13:49.909Z\"\n    },\n    {\n        \"userId\": \"01JT5B3JTNJ5QK6RHR862ZFW7Z\",\n        \"email\": \"ROSLYN.MOORE36@HOTMAIL.COM\",\n        \"firstName\": \"Roslyn\",\n        \"lastName\": \"Moore\",\n        \"role\": \"Developer\",\n        \"createdAt\": \"2025-05-01T07:13:49.909Z\"\n    },\n    {\n        \"userId\": \"01JT5B3JTNGKCJED1XY5HPJ5BE\",\n        \"email\": \"ELDORA.BOSCO49@YAHOO.COM\",\n        \"firstName\": \"Eldora\",\n        \"lastName\": \"Bosco\",\n        \"role\": \"Developer\",\n        \"createdAt\": \"2025-05-01T07:13:49.909Z\"\n    },\n    {\n        \"userId\": \"01JT5B3JTNYR0NHW2ZSADK2KYY\",\n        \"email\": \"ELWIN_TRANTOW62@HOTMAIL.COM\",\n        \"firstName\": \"Elwin\",\n        \"lastName\": \"Trantow\",\n        \"role\": \"Developer\",\n        \"createdAt\": \"2025-05-01T07:13:49.909Z\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "User Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/users/:userId",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "01JT5B3JTNYRJJHFBWFEPM61MK"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/users/:userId",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"users",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "01JT5B3JTNYRJJHFBWFEPM61MK"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "168"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 02 May 2025 23:59:40 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userId\": \"01JT5B3JTNYRJJHFBWFEPM61MK\",\n    \"email\": \"MARLEN_HUEL43@YAHOO.COM\",\n    \"firstName\": \"Marlen\",\n    \"lastName\": \"Huel\",\n    \"role\": \"Manager\",\n    \"createdAt\": \"2025-05-01T07:13:49.909Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"kucingmenangis@contoh.com\",\r\n    \"firstName\": \"Kucing\",\r\n    \"lastName\": \"Menangis\",\r\n    \"password\": \"2025DEVChallenge\",\r\n    \"role\": \"Developer\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/users",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"kucingmenangis@contoh.com\",\r\n    \"firstName\": \"Kucing\",\r\n    \"lastName\": \"Menangis\",\r\n    \"password\": \"2025DEVChallenge\",\r\n    \"role\": \"Developer\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URI}}/users",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "176"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 23:19:10 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"userId\": \"01JTC74JKDYCSTWHRJC0Q660KH\",\n    \"email\": \"KUCINGMENANGIS@CONTOH.COM\",\n    \"firstName\": \"Kucing\",\n    \"lastName\": \"Menangis\",\n    \"role\": \"Developer\",\n    \"createdAt\": \"2025-05-03T23:19:09.250Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/users/:userId",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"users",
+								":userId"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "01JTC74JKDYCSTWHRJC0Q660KH"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/users/:userId",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"users",
+										":userId"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "01JTC74JKDYCSTWHRJC0Q660KH"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "text/plain; charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 23:19:59 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Epics",
+			"item": [
+				{
+					"name": "List Epics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/epics",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"epics"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/epics",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"epics"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "1564"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 00:05:42 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"epicId\": \"01JT5B3PJH3FSBZRY6FFV10YYR\",\n        \"title\": \"generate digital firewall\",\n        \"createdAt\": \"2025-05-01T07:13:53.745Z\",\n        \"createdBy\": \"01JT5B3JTN1V2VECJWRTBJCMFG\"\n    },\n    {\n        \"epicId\": \"01JT5B3PJH3FSBZRY6FFV10YYR\",\n        \"title\": \"generate digital firewall\",\n        \"createdAt\": \"2025-05-01T07:13:53.745Z\",\n        \"createdBy\": \"01JT5B3JTN1V2VECJWRTBJCMFG\"\n    },\n    {\n        \"epicId\": \"01JT5B3PJH3FSBZRY6FFV10YYR\",\n        \"title\": \"generate digital firewall\",\n        \"createdAt\": \"2025-05-01T07:13:53.745Z\",\n        \"createdBy\": \"01JT5B3JTN1V2VECJWRTBJCMFG\"\n    },\n    {\n        \"epicId\": \"01JT5B3PJGDJ7ZZV6D36S0H44X\",\n        \"title\": \"quantify online matrix\",\n        \"createdAt\": \"2025-05-01T07:13:53.745Z\",\n        \"createdBy\": \"01JT5B3JTN1V2VECJWRTBJCMFG\"\n    },\n    {\n        \"epicId\": \"01JT5B3PHPFAVCJWEH3AY8N5E4\",\n        \"title\": \"input open-source array\",\n        \"createdAt\": \"2025-05-01T07:13:53.718Z\",\n        \"createdBy\": \"01JT5B3JTNYRJJHFBWFEPM61MK\"\n    },\n    {\n        \"epicId\": \"01JT5B3PHPEDP9DYSFHTNZ2256\",\n        \"title\": \"connect multi-byte transmitter\",\n        \"createdAt\": \"2025-05-01T07:13:53.718Z\",\n        \"createdBy\": \"01JT5B3JTNYRJJHFBWFEPM61MK\"\n    },\n    {\n        \"epicId\": \"01JT5B3PHPFAVCJWEH3AY8N5E4\",\n        \"title\": \"input open-source array\",\n        \"createdAt\": \"2025-05-01T07:13:53.718Z\",\n        \"createdBy\": \"01JT5B3JTNYRJJHFBWFEPM61MK\"\n    },\n    {\n        \"epicId\": \"01JT5B3PHPEDP9DYSFHTNZ2256\",\n        \"title\": \"connect multi-byte transmitter\",\n        \"createdAt\": \"2025-05-01T07:13:53.718Z\",\n        \"createdBy\": \"01JT5B3JTNYRJJHFBWFEPM61MK\"\n    },\n    {\n        \"epicId\": \"01JT5B3PHPEDP9DYSFHTNZ2256\",\n        \"title\": \"connect multi-byte transmitter\",\n        \"createdAt\": \"2025-05-01T07:13:53.718Z\",\n        \"createdBy\": \"01JT5B3JTNYRJJHFBWFEPM61MK\"\n    },\n    {\n        \"epicId\": \"01JT5B3PHN80CD3ZDJ5W85BX5X\",\n        \"title\": \"copy mobile protocol\",\n        \"createdAt\": \"2025-05-01T07:13:53.717Z\",\n        \"createdBy\": \"01JT5B3JTNYRJJHFBWFEPM61MK\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Epic Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/epics/statistics",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"epics",
+								"statistics"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/epics/statistics",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"epics",
+										"statistics"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "899"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 00:09:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"epicId\": \"01JT5B3PJGDJ7ZZV6D36S0H44X\",\n        \"title\": \"quantify online matrix\",\n        \"taskCount\": 1,\n        \"todoTaskCount\": 1,\n        \"inProgressTaskCount\": 0,\n        \"completedTaskCount\": 0,\n        \"completionPercentage\": 0\n    },\n    {\n        \"epicId\": \"01JT5B3PJH3FSBZRY6FFV10YYR\",\n        \"title\": \"generate digital firewall\",\n        \"taskCount\": 3,\n        \"todoTaskCount\": 0,\n        \"inProgressTaskCount\": 1,\n        \"completedTaskCount\": 2,\n        \"completionPercentage\": 67\n    },\n    {\n        \"epicId\": \"01JT5B3PHPEDP9DYSFHTNZ2256\",\n        \"title\": \"connect multi-byte transmitter\",\n        \"taskCount\": 3,\n        \"todoTaskCount\": 1,\n        \"inProgressTaskCount\": 1,\n        \"completedTaskCount\": 1,\n        \"completionPercentage\": 33\n    },\n    {\n        \"epicId\": \"01JT5B3PHPFAVCJWEH3AY8N5E4\",\n        \"title\": \"input open-source array\",\n        \"taskCount\": 2,\n        \"todoTaskCount\": 1,\n        \"inProgressTaskCount\": 0,\n        \"completedTaskCount\": 1,\n        \"completionPercentage\": 50\n    },\n    {\n        \"epicId\": \"01JT5B3PHN80CD3ZDJ5W85BX5X\",\n        \"title\": \"copy mobile protocol\",\n        \"taskCount\": 1,\n        \"todoTaskCount\": 0,\n        \"inProgressTaskCount\": 1,\n        \"completedTaskCount\": 0,\n        \"completionPercentage\": 0\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Create Epic",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"lorem ipsum\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/epics",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"epics"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"lorem ipsum\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URI}}/epics",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"epics"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "141"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 09:12:28 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"epicId\": \"01JTAPP75G5KY94331Z6YWM51C\",\n    \"title\": \"lorem ipsum\",\n    \"createdAt\": \"2025-05-03T09:12:27.057Z\",\n    \"createdBy\": \"01JT5B3JTME9ZQHC1T3WARBWKW\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Epic",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/epics/:epicId",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"epics",
+								":epicId"
+							],
+							"variable": [
+								{
+									"key": "epicId",
+									"value": "01JTAP8KA7JJKXGY1YX0J4HGP5"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/epics/:epicId",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"epics",
+										":epicId"
+									],
+									"variable": [
+										{
+											"key": "epicId",
+											"value": "01JTAP8KA7JJKXGY1YX0J4HGP5"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "text/plain; charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 09:20:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Rename Epic",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"kucing menangis\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/epics/:epicId",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"epics",
+								":epicId"
+							],
+							"variable": [
+								{
+									"key": "epicId",
+									"value": "01JT9QXRND5EWKH6VE33GYA1MH"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"kucing menangis\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URI}}/epics/:epicId",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"epics",
+										":epicId"
+									],
+									"variable": [
+										{
+											"key": "epicId",
+											"value": "01JT9QXRND5EWKH6VE33GYA1MH"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "145"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 09:22:21 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"epicId\": \"01JT9QXRND5EWKH6VE33GYA1MH\",\n    \"title\": \"kucing menangis\",\n    \"createdAt\": \"2025-05-03T00:14:48.494Z\",\n    \"createdBy\": \"01JT5B3JTME9ZQHC1T3WARBWKW\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "List Tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/tasks",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "epicId",
+									"value": "01JTB043E44CDH36SES0HXJ6PC",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/tasks",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"tasks"
+									],
+									"query": [
+										{
+											"key": "epicId",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "1768"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 09:28:58 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"taskId\": \"01JT5B3TNTBM9YX42TXNGKJMEV\",\n        \"title\": \"synthesize bluetooth circuit\",\n        \"epicId\": \"01JT5B3PJH3FSBZRY6FFV10YYR\",\n        \"assigneeUserId\": \"01JT5B3JTNYR0NHW2ZSADK2KYY\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JT5B3TNTEXRRKQX86XFBTREH\",\n        \"title\": \"parse online microchip\",\n        \"epicId\": \"01JT5B3PHPFAVCJWEH3AY8N5E4\",\n        \"assigneeUserId\": \"01JT5B3JTNYR0NHW2ZSADK2KYY\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JT5B3TNTSFWR51RDBAY5TZG0\",\n        \"title\": \"navigate optical bandwidth\",\n        \"epicId\": \"01JT5B3PHN80CD3ZDJ5W85BX5X\",\n        \"assigneeUserId\": \"01JT5B3JTNYR0NHW2ZSADK2KYY\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JT5B3TNV3K10R763NSCCBR9M\",\n        \"title\": \"program auxiliary protocol\",\n        \"epicId\": \"01JT5B3PJH3FSBZRY6FFV10YYR\",\n        \"assigneeUserId\": \"01JT5B3JTNGKCJED1XY5HPJ5BE\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JT5B3TNVXD4CJNN8AHVZT09K\",\n        \"title\": \"back up optical protocol\",\n        \"epicId\": \"01JT5B3PJH3FSBZRY6FFV10YYR\",\n        \"assigneeUserId\": \"01JT5B3JTNGKCJED1XY5HPJ5BE\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JT5B3TPF8J6QJRFYK75BC9H3\",\n        \"title\": \"bypass optical monitor\",\n        \"epicId\": \"01JT5B3PHPEDP9DYSFHTNZ2256\",\n        \"assigneeUserId\": \"01JT5B3JTNYR0NHW2ZSADK2KYY\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JT5B3TPFAAVGMATZBWWJ46EA\",\n        \"title\": \"parse 1080p array\",\n        \"epicId\": \"01JT5B3PHPEDP9DYSFHTNZ2256\",\n        \"assigneeUserId\": \"01JT5B3JTNJ5QK6RHR862ZFW7Z\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JT5B3TPFC2V3P91XXF67EG4R\",\n        \"title\": \"bypass cross-platform circuit\",\n        \"epicId\": \"01JT5B3PJGDJ7ZZV6D36S0H44X\",\n        \"assigneeUserId\": \"01JT5B3JTNJ5QK6RHR862ZFW7Z\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JT5B3TPFEGPM8MJR2CD7CMAF\",\n        \"title\": \"input open-source alarm\",\n        \"epicId\": \"01JT5B3PHPFAVCJWEH3AY8N5E4\",\n        \"assigneeUserId\": \"01JT5B3JTNJ5QK6RHR862ZFW7Z\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JT5B3TPGMGW8DBYYKXDYVV4B\",\n        \"title\": \"hack haptic protocol\",\n        \"epicId\": \"01JT5B3PHPEDP9DYSFHTNZ2256\",\n        \"assigneeUserId\": \"01JT5B3JTNJ5QK6RHR862ZFW7Z\",\n        \"commentsCount\": 1\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Task Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/tasks/:taskId",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"tasks",
+								":taskId"
+							],
+							"variable": [
+								{
+									"key": "taskId",
+									"value": "01JTB049SPRP6FSN02BYF8B6D6"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/tasks/:taskId",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"tasks",
+										":taskId"
+									],
+									"variable": [
+										{
+											"key": "taskId",
+											"value": "01JT5B3TNTBM9YX42TXNGKJMEV"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "407"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 09:42:45 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"taskId\": \"01JT5B3TNTBM9YX42TXNGKJMEV\",\n    \"title\": \"synthesize bluetooth circuit\",\n    \"description\": \"Veniam vorago causa magni timor cruentus suus. Paulatim uredo vorago ager. Bardus defendo infit aliquid clibanus vestigium.\",\n    \"timeSpent\": 5.690037314301954,\n    \"status\": \"IN_PROGRESS\",\n    \"commentsCount\": 2,\n    \"epicId\": \"01JT5B3PJH3FSBZRY6FFV10YYR\",\n    \"createdAt\": \"2025-05-01T07:13:57.947Z\",\n    \"createdBy\": \"01JT5B3JTNYRJJHFBWFEPM61MK\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Statistics by User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/tasks/statistics/users",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"tasks",
+								"statistics",
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/tasks/statistics/users",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"tasks",
+										"statistics",
+										"users"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "287"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 13:56:18 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"taskCount\": 3,\n        \"userId\": \"01JTB03ZDG4C7AGN34ANVHVCAB\",\n        \"firstName\": \"Nora\",\n        \"lastName\": \"Pouros\"\n    },\n    {\n        \"taskCount\": 4,\n        \"userId\": \"01JTB03ZDGQ0KH54PAPHCXTB19\",\n        \"firstName\": \"Austin\",\n        \"lastName\": \"Murazik\"\n    },\n    {\n        \"taskCount\": 3,\n        \"userId\": \"01JTB03ZDGZW69GWZ8JSCQ5KVZ\",\n        \"firstName\": \"Kolby\",\n        \"lastName\": \"Abernathy\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Statistircs by Task",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/tasks/statistics/tasks",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"tasks",
+								"statistics",
+								"tasks"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/tasks/statistics/tasks",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"tasks",
+										"statistics",
+										"tasks"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "1759"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 13:56:08 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"taskId\": \"01JTB049SND6YMV08G2Z7B6379\",\n        \"title\": \"override digital driver\",\n        \"epicId\": \"01JTB043E44CDH36SES0HXJ6PC\",\n        \"assigneeUserId\": \"01JTB03ZDGZW69GWZ8JSCQ5KVZ\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JTB049SP288C5Y3MEDBV80XV\",\n        \"title\": \"connect neural array\",\n        \"epicId\": \"01JTB043E44CDH36SES0HXJ6PC\",\n        \"assigneeUserId\": \"01JTB03ZDGQ0KH54PAPHCXTB19\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JTB049SPBX4YTV3K0Q027WBH\",\n        \"title\": \"navigate cross-platform matrix\",\n        \"epicId\": \"01JTB043ETF5AV5DZ7XX2EGA17\",\n        \"assigneeUserId\": \"01JTB03ZDGZW69GWZ8JSCQ5KVZ\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JTB049SPKSABCRB7YXBM86AA\",\n        \"title\": \"reboot redundant pixel\",\n        \"epicId\": \"01JTB043ETW19ZHM0FZC3EYASS\",\n        \"assigneeUserId\": \"01JTB03ZDG4C7AGN34ANVHVCAB\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JTB049SPRP6FSN02BYF8B6D6\",\n        \"title\": \"reboot multi-byte card\",\n        \"epicId\": \"01JTB043E44CDH36SES0HXJ6PC\",\n        \"assigneeUserId\": \"01JTB03ZDGQ0KH54PAPHCXTB19\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JTB049TRZ1M1R72MQN19E9S4\",\n        \"title\": \"override wireless sensor\",\n        \"epicId\": \"01JTB043E44CDH36SES0HXJ6PC\",\n        \"assigneeUserId\": \"01JTB03ZDG4C7AGN34ANVHVCAB\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JTB049TS33YS56MRS5Z7JJYN\",\n        \"title\": \"navigate neural port\",\n        \"epicId\": \"01JTB043E44CDH36SES0HXJ6PC\",\n        \"assigneeUserId\": \"01JTB03ZDGZW69GWZ8JSCQ5KVZ\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JTB049TSE7C3N6FY149YX5ZR\",\n        \"title\": \"input virtual sensor\",\n        \"epicId\": \"01JTB043E44CDH36SES0HXJ6PC\",\n        \"assigneeUserId\": \"01JTB03ZDGQ0KH54PAPHCXTB19\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JTB049TSEXCFKCZ37A49RG1Z\",\n        \"title\": \"override auxiliary monitor\",\n        \"epicId\": \"01JTB043ET1QF3H2MZRJ3PN1SG\",\n        \"assigneeUserId\": \"01JTB03ZDGQ0KH54PAPHCXTB19\",\n        \"commentsCount\": 1\n    },\n    {\n        \"taskId\": \"01JTB049TSRGWG14SFEA9YDWMV\",\n        \"title\": \"reboot wireless panel\",\n        \"epicId\": \"01JTB043E44CDH36SES0HXJ6PC\",\n        \"assigneeUserId\": \"01JTB03ZDG4C7AGN34ANVHVCAB\",\n        \"commentsCount\": 1\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Create Task",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"epicId\": \"01JT5B3PJGDJ7ZZV6D36S0H44X\",\r\n    \"title\": \"percobaan 1\",\r\n    \"description\": \"contoh fitur\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/tasks",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"epicId\": \"01JT5B3PJGDJ7ZZV6D36S0H44X\",\r\n    \"title\": \"percobaan 1\",\r\n    \"description\": \"contoh fitur\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URI}}/tasks",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"tasks"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "238"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 09:57:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"taskId\": \"01JTAS9GS6JAS4QD5K7YQ298AT\",\n    \"title\": \"percobaan 1\",\n    \"description\": \"contoh fitur\",\n    \"timeSpent\": 0,\n    \"status\": \"TODO\",\n    \"epicId\": \"01JT5B3PJGDJ7ZZV6D36S0H44X\",\n    \"createdAt\": \"2025-05-03T09:57:56.647Z\",\n    \"createdBy\": \"01JT5B3JTME9ZQHC1T3WARBWKW\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/tasks/:taskId",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"tasks",
+								":taskId"
+							],
+							"variable": [
+								{
+									"key": "taskId",
+									"value": "01JT5B3TNTSFWR51RDBAY5TZG0"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/tasks/:taskId",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"tasks",
+										":taskId"
+									],
+									"variable": [
+										{
+											"key": "taskId",
+											"value": "01JT5B3TNTSFWR51RDBAY5TZG0"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "text/plain; charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 10:12:56 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"test edit\",\r\n    \"description\": \"test edit\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/tasks/:taskId",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"tasks",
+								":taskId"
+							],
+							"variable": [
+								{
+									"key": "taskId",
+									"value": "01JTB049SND6YMV08G2Z7B6379"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"test edit\",\r\n    \"description\": \"test edit\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URI}}/tasks/:taskId",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"tasks",
+										":taskId"
+									],
+									"variable": [
+										{
+											"key": "taskId",
+											"value": "01JTB049SND6YMV08G2Z7B6379"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "217"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 23:36:31 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"taskId\": \"01JTB049SND6YMV08G2Z7B6379\",\n    \"title\": \"test edit\",\n    \"description\": \"test edit\",\n    \"timeSpentInMinutes\": 7.101616513206985,\n    \"status\": \"DONE\",\n    \"epicId\": \"01JTB043E44CDH36SES0HXJ6PC\",\n    \"createdAt\": \"2025-05-03T11:57:25.686Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Assign Task to User",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": \"01JTB03ZDGQ0KH54PAPHCXTB19\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/tasks/:taskId/assign",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"tasks",
+								":taskId",
+								"assign"
+							],
+							"variable": [
+								{
+									"key": "taskId",
+									"value": "01JTB049SND6YMV08G2Z7B6379"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"userId\": \"01JTB03ZDGQ0KH54PAPHCXTB19\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URI}}/tasks/:taskId/assign",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"tasks",
+										":taskId",
+										"assign"
+									],
+									"variable": [
+										{
+											"key": "taskId",
+											"value": "01JTB049SND6YMV08G2Z7B6379"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "300"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 23:40:08 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"taskId\": \"01JTB049SND6YMV08G2Z7B6379\",\n    \"title\": \"test edit\",\n    \"description\": \"test edit\",\n    \"timeSpentInMinutes\": 7.101616513206985,\n    \"status\": \"DONE\",\n    \"epicId\": \"01JTB043E44CDH36SES0HXJ6PC\",\n    \"assignedTo\": \"01JTB03ZDGQ0KH54PAPHCXTB19\",\n    \"createdAt\": \"2025-05-03T11:57:25.686Z\",\n    \"createdBy\": \"01JTB03ZDFB79M2DDFD9DWYGK3\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Unassign Task to User",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/tasks/:taskId/unassign",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"tasks",
+								":taskId",
+								"unassign"
+							],
+							"variable": [
+								{
+									"key": "taskId",
+									"value": "01JTB049SND6YMV08G2Z7B6379"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/tasks/:taskId/unassign",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"tasks",
+										":taskId",
+										"unassign"
+									],
+									"variable": [
+										{
+											"key": "taskId",
+											"value": "01JTB049SND6YMV08G2Z7B6379"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "276"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 23:38:54 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"taskId\": \"01JTB049SND6YMV08G2Z7B6379\",\n    \"title\": \"test edit\",\n    \"description\": \"test edit\",\n    \"timeSpentInMinutes\": 7.101616513206985,\n    \"status\": \"DONE\",\n    \"epicId\": \"01JTB043E44CDH36SES0HXJ6PC\",\n    \"assignedTo\": null,\n    \"createdAt\": \"2025-05-03T11:57:25.686Z\",\n    \"createdBy\": \"01JTB03ZDFB79M2DDFD9DWYGK3\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Log Work",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"status\": \"DONE\",\r\n    \"incrementTimeSpentInMinutes\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/tasks/:taskId/log-work",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"tasks",
+								":taskId",
+								"log-work"
+							],
+							"variable": [
+								{
+									"key": "taskId",
+									"value": "01JT5B3TNTBM9YX42TXNGKJMEV"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"DONE\",\r\n    \"incrementTimeSpentInMinutes\": 0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URI}}/tasks/:taskId/log-work",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"tasks",
+										":taskId",
+										"log-work"
+									],
+									"variable": [
+										{
+											"key": "taskId",
+											"value": "01JT5B3TNTBM9YX42TXNGKJMEV"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "341"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 10:24:46 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"taskId\": \"01JT5B3TNTBM9YX42TXNGKJMEV\",\n    \"title\": \"synthesize bluetooth circuit\",\n    \"description\": \"Veniam vorago causa magni timor cruentus suus. Paulatim uredo vorago ager. Bardus defendo infit aliquid clibanus vestigium.\",\n    \"timeSpent\": 5.690037314301954,\n    \"status\": \"DONE\",\n    \"epicId\": \"01JT5B3PJH3FSBZRY6FFV10YYR\",\n    \"createdAt\": \"2025-05-01T07:13:57.947Z\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "List Comments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/comments?taskId=01JT5B3TNTBM9YX42TXNGKJMEV",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"comments"
+							],
+							"query": [
+								{
+									"key": "taskId",
+									"value": "01JT5B3TNTBM9YX42TXNGKJMEV"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/comments?taskId=01JT5B3TNTBM9YX42TXNGKJMEV",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"comments"
+									],
+									"query": [
+										{
+											"key": "taskId",
+											"value": "01JT5B3TNTBM9YX42TXNGKJMEV"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "189"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 09:30:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"commentId\": \"01JT5B42CH88K98FK916T879TC\",\n        \"content\": \"Conculco illo suasoria verecundia nobis candidus tamen.\",\n        \"taskId\": \"01JT5B3TNTBM9YX42TXNGKJMEV\",\n        \"createdAt\": \"2025-05-01T07:14:05.841Z\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Create Comment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"taskId\": \"01JT5B3TNTBM9YX42TXNGKJMEV\",\r\n    \"content\": \"kucing menangis\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/comments",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"taskId\": \"01JT5B3TNTBM9YX42TXNGKJMEV\",\r\n    \"content\": \"kucing menangis\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URI}}/comments",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"comments"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "147"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 09:36:12 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"commentId\": \"01JTAR1NF49WSBR20YKD2NMFW5\",\n    \"content\": \"kucing menangis\",\n    \"taskId\": \"01JT5B3TNTBM9YX42TXNGKJMEV\",\n    \"createdAt\": \"2025-05-03T09:36:10.725Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Comment",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/comments/:commentId",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"comments",
+								":commentId"
+							],
+							"variable": [
+								{
+									"key": "commentId",
+									"value": "01JTAR93X4VJ5K316RQTN6GMFP"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URI}}/comments/:commentId",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"comments",
+										":commentId"
+									],
+									"variable": [
+										{
+											"key": "commentId",
+											"value": "01JTAR93X4VJ5K316RQTN6GMFP"
+										}
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "text/plain; charset=UTF-8"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 09:40:26 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Update Comment",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"content\": \"LGTM\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/comments/:commentId",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"comments",
+								":commentId"
+							],
+							"variable": [
+								{
+									"key": "commentId",
+									"value": "01JTAR9Y9EMBED1EFR9RBAEDKS"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "OK",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"content\": \"LGTM\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URI}}/comments/:commentId",
+									"host": [
+										"{{BASE_URI}}"
+									],
+									"path": [
+										"comments",
+										":commentId"
+									],
+									"variable": [
+										{
+											"key": "commentId",
+											"value": "01JTAR9Y9EMBED1EFR9RBAEDKS"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "content-type",
+									"value": "application/json"
+								},
+								{
+									"key": "content-length",
+									"value": "136"
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 03 May 2025 09:40:58 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"commentId\": \"01JTAR9Y9EMBED1EFR9RBAEDKS\",\n    \"content\": \"LGTM\",\n    \"taskId\": \"01JT5B3TNTBM9YX42TXNGKJMEV\",\n    \"createdAt\": \"2025-05-03T09:40:41.903Z\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{ACCESS_TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URI",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		}
+	]
+}
