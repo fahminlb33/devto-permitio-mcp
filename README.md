@@ -36,9 +36,12 @@ This project uses ReBAC, so you MUST run a local PDP to authorize some of the AP
 Make sure you have a valid environment file as described above, then you can run:
 
 ```bash
+docker network create devto-permitio-mcp
+
 docker run -d -it \
   -p 7766:7000 \
   --env-file .env \
+  --net devto-permitio-mcp \
   --name devto-permitio-mcp-pdp \
   permitio/pdp-v2:latest
 ```
@@ -71,30 +74,33 @@ Paste the config below.
 
 ```json
 {
-    "mcpServers": {
-        "miniKanban": {
-            "command": "docker",
-            "args": [
-                "run",
-                "-i",
-                "--rm",
-                "--env-file",
-                "D:\\devto-permitio-mcp\\docker.env",
-                "-v",
-                "D:\\devto-permitio-mcp:/data",
-                "--name",
-                "devto-permitio-mcp",
-                "devto-permitio-todo:latest",
-                "node",
-                "dist/app.mcp.js"
-            ]
-        }
+  "mcpServers": {
+    "miniKanban": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--env-file",
+        "D:/devto-permitio-mcp/docker.env",
+        "-v",
+        "D:/devto-permitio-mcp/local.db:/app/local.db:rw",
+        "--net",
+        "devto-permitio-mcp",
+        "--name",
+        "devto-permitio-mcp",
+        "devto-permitio-mcp:latest",
+        "node",
+        "app.mcp.js"
+      ]
     }
+  }
 }
+
 ```
 
 Make sure to change the volume path to the correct directory that contained the SQLite database file. If you're using WSL, copy the file to Windows first!
 
-Don't forget to also copy the environment file and adjust the path accordingly.
+Don't forget to also copy the environment file and adjust the path accordingly. Other thing to change is the `PERMIT_IO_PDP_URL` so it point to the correct docker container, for example `http://devto-permitio-mcp-pdp:7000` (notice the port is the container port, not host port).
 
 Restart Calude Desktop and you should be seeing new tools available.
